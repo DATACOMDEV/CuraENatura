@@ -1,0 +1,37 @@
+<!-- <script>
+    require(
+        [
+            'jquery'
+        ],
+        function($) {
+            var resizeFunc = function() {
+                var mobileItem = $('#mobile_search > .item-container > .block.block-search.type-1');
+                var desktopItem = $('.col-sm-3.col-md-2 > .block.block-search.type-1');
+
+                if (desktopItem.length > 0) {
+                    desktopItem.parent().addClass('search-fix-desktop');
+                }
+
+                if ($(window).width() > 974) { //DESKTOP
+                    if (desktopItem.length > 0) {
+                        return;
+                    }
+
+                    $('.search-fix-desktop').append(mobileItem);
+                } else {    //MOBILE
+                    if (mobileItem.length > 0) {
+                        return;
+                    }
+
+                    $('#mobile_search > .item-container').append(desktopItem);
+                }
+            };
+
+            resizeFunc();
+
+            $(window).resize(function() {
+                resizeFunc();
+            });
+        }
+    );
+</script> -->

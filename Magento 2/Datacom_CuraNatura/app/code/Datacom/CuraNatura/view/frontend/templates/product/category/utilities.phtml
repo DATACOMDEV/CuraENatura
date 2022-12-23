@@ -1,0 +1,11 @@
+<script>
+    require(
+        ['jquery'],
+        function($) {
+            var pagesBar = $('nav.pages').clone();
+            if (pagesBar.length == 0) return;
+            pagesBar.css({'text-align': 'center'});
+            $('.toolbar-bottom').append(pagesBar);
+        }
+    );
+</script>

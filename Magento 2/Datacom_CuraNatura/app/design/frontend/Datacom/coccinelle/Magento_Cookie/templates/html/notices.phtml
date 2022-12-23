@@ -1,0 +1,85 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magento\Cookie\Block\Html\Notices $block */
+?>
+<?php if ($this->helper(\Magento\Cookie\Helper\Cookie::class)->isCookieRestrictionModeEnabled()): ?>
+    <div role="alertdialog"
+         tabindex="-1"
+         class="message global cookie"
+         id="notice-cookie-block"
+         style="display: none;">
+        <div role="document" class="content" tabindex="0">
+            <div class="container">
+				<div class="dtm-table-md">
+					<div class="dtm-table-row">
+						<div class="dtm-table-cell">
+							<p><?php /* @escapeNotVerified */ echo __('This website requires cookies to provide all of its features. <br class="hidden-xs hidden-sm">For more information on what data is contained in the cookies, please see our'); ?> <?php /* @escapeNotVerified */ echo __('<a href="%1">Privacy Policy page</a>', $block->getPrivacyPolicyLink()) ?>. <br class="hidden-xs"><?php /* @escapeNotVerified */ echo __('To accept cookies from this site, please click the Allow button below.'); ?>
+							</p>
+						</div>
+						<div class="dtm-table-cell">
+							<div class="actions">
+								<button id="btn-cookie-allow" class="action allow btn btn-default">
+									<span><?= $block->escapeHtml(__('Allow Cookies')) ?></span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+            </div>
+        </div>
+    </div>
+    <script type="text/x-magento-init">
+        {
+            "#notice-cookie-block": {
+                "cookieNotices": {
+                    "cookieAllowButtonSelector": "#btn-cookie-allow",
+                    "cookieName": "<?= /* @noEscape */ \Magento\Cookie\Helper\Cookie::IS_USER_ALLOWED_SAVE_COOKIE ?>",
+                    "cookieValue": <?= /* @noEscape */ $this->helper(\Magento\Cookie\Helper\Cookie::class)->getAcceptedSaveCookiesWebsiteIds() ?>,
+                    "cookieLifetime": <?= /* @noEscape */ $this->helper(\Magento\Cookie\Helper\Cookie::class)->getCookieRestrictionLifetime() ?>,
+                    "noCookiesUrl": "<?= $block->escapeJs($block->escapeUrl($block->getUrl('cookie/index/noCookies'))) ?>"
+                }
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        require([
+            'jquery',
+            'mage/cookies'
+        ], function ($) {
+            if ($('#notice-cookie-block').length) {
+                if (!$.cookie('user_allowed_save_cookie')) {
+                    $('html > body').addClass('with-notice-cookie-block');
+                }
+                if ($.cookie('user_allowed_save_cookie')) {
+                    $('html > body').removeClass('with-notice-cookie-block');
+                }
+            } else {                
+                $('html > body').removeClass('with-notice-cookie-block');
+            }
+            $('#btn-cookie-allow').on('click', function(){
+                $('html > body').removeClass('with-notice-cookie-block');
+            });
+
+            function setCookieNoticeSpace() {
+                if ($('html > body').hasClass('with-notice-cookie-block')) {
+                    var height = $('#notice-cookie-block').outerHeight();
+                    $('html > body').css('padding-bottom', height);
+                } else {
+                    $('html > body').css('padding-bottom', 0);
+                }
+            }
+            $(window).resize(function(){
+                setCookieNoticeSpace();
+            });
+            jQuery(document).ready(function(){
+                setCookieNoticeSpace();
+            });
+        });
+    </script>
+<?php endif; ?>

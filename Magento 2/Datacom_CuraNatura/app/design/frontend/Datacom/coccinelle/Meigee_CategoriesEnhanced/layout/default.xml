@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<head>
+		<link src="Meigee_CategoriesEnhanced::css/megamenu.css"/>
+		<link src="Meigee_CategoriesEnhanced::css/megamenu-theme.css"/>
+		<link src="Meigee_CategoriesEnhanced::js/megamenu.js"/>
+	</head>
+    <body>
+        <referenceBlock name="catalog.topnav">
+			<action method="setTemplate">
+				<argument name="template" xsi:type="string">Meigee_CategoriesEnhanced::html/megamenu.phtml</argument>
+			</action>
+        </referenceBlock>
+		<referenceBlock name="sticky.catalog.topnav">
+			<action method="setTemplate">
+				<argument name="template" xsi:type="string">Meigee_CategoriesEnhanced::html/megamenu_sticky.phtml</argument>
+			</action>
+        </referenceBlock>
+        <referenceContainer name="page.wrapper">
+	        <block class="Meigee\CategoriesEnhanced\Block\CategoriesEnhancedTemplate" name="meigee_mobile_header" template="Meigee_CategoriesEnhanced::html/mobile_header.phtml">
+				<block class="Magento\Framework\View\Element\Template" name="mobile.navigation.sections" before="-" template="Meigee_CategoriesEnhanced::html/sections.phtml">
+					<arguments>
+						<argument name="group_name" xsi:type="string">navigation-sections</argument>
+						<argument name="group_css" xsi:type="string">nav-sections</argument>
+					</arguments>
+					<block class="Magento\Framework\View\Element\Template" name="mobile_store_menu" group="navigation-sections" template="Meigee_CategoriesEnhanced::html/container_mobile.phtml">
+						<arguments>
+						  <argument name="title" translate="true" xsi:type="string">Menu</argument>
+						</arguments>
+						<block class="Magento\Theme\Block\Html\Topmenu" name="mobile.catalog.topnav" template="Meigee_CategoriesEnhanced::html/topmenu_mobile.phtml" />
+					</block>
+					<block class="Magento\Framework\View\Element\Template" name="header_links_wrapper" group="navigation-sections" template="Meigee_CategoriesEnhanced::html/container_mobile.phtml">
+						<arguments>
+						  <argument name="title" translate="true" xsi:type="string">Account</argument>
+						  <argument name="use_force" xsi:type="boolean">true</argument>
+						</arguments>
+						<block class="Magento\Framework\View\Element\Html\Links" name="header.links.mobile" after="-">
+						  <arguments>
+							<argument name="css_class" xsi:type="string">header links</argument>
+						  </arguments>
+						  <block class="Magento\Framework\View\Element\Template" name="catalog.compare.link.mobile" before="-" template="Magento_Catalog::product/compare/link.phtml">
+							<arguments>
+							  <argument name="jsLayout" xsi:type="array">
+								<item name="components" xsi:type="array">
+								  <item name="compareProducts" xsi:type="array">
+									<item name="component" xsi:type="string">Magento_Catalog/js/view/compare-products</item>
+								  </item>
+								</item>
+							  </argument>
+							</arguments>
+						  </block>
+						  <block class="Magento\Customer\Block\Account\Link" name="my-account-link-mobile">
+							<arguments>
+							  <argument name="label" xsi:type="string" translate="true">My Account</argument>
+							  <argument name="class" xsi:type="string">top-link-myaccount</argument>
+							</arguments>
+						  </block>
+						  <block class="Magento\Wishlist\Block\Link" name="wish-list-link-mobile"/>
+						  <block class="Magento\Customer\Block\Account\RegisterLink" name="register-link-mobile">
+							<arguments>
+							  <argument name="label" xsi:type="string" translate="true">Create an Account</argument>
+							  <argument name="class" xsi:type="string">top-link-create</argument>
+							</arguments>
+						  </block>
+						  <block class="Magento\Customer\Block\Account\AuthorizationLink" name="authorization-link-dropdown-mobile" template="account/link/authorization.phtml"/>
+						</block>
+					</block>
+					<block class="Magento\Framework\View\Element\Template" name="mobile_search" group="navigation-sections" template="Meigee_CategoriesEnhanced::html/container_mobile.phtml">
+						<!-- <block class="Magento\Framework\View\Element\Template" name="mobile.search" as="mobileSearch" template="Magento_Search::form.mini.phtml"/> -->
+                        <block class="Magento\Framework\View\Element\Template" name="mobile.search.fix" as="mobileSearchFix" template="Magento_Theme::html/form.mini.fix.phtml"/>
+					</block>
+					<block class="Magento\Framework\View\Element\Template" name="mobile_store_settings" group="navigation-sections" template="Meigee_CategoriesEnhanced::html/container_mobile.phtml">
+						<arguments>
+						  <argument name="title" translate="true" xsi:type="string">Settings</argument>
+						</arguments>
+						<block class="Magento\Store\Block\Switcher" name="store.settings.language" template="Meigee_CategoriesEnhanced::html/languages_mobile.phtml">
+						  <arguments>
+							<argument name="id_modifier" xsi:type="string">nav</argument>
+						  </arguments>
+						</block>
+						<block class="Magento\Directory\Block\Currency" name="store.settings.currency" template="Meigee_CategoriesEnhanced::html/currency_mobile.phtml">
+						  <arguments>
+							<argument name="id_modifier" xsi:type="string">nav</argument>
+						  </arguments>
+						</block>
+					</block>
+				</block>
+			</block>
+        </referenceContainer>
+    </body>
+</page>

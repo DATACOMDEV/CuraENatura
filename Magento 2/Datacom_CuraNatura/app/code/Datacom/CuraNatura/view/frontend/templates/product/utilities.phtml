@@ -1,0 +1,63 @@
+<?php $_product = $block->getProduct(); ?>
+<?php $_productRewardPoints = $_product->getFinalPrice() / 2; ?>
+<?php $_productRewardPoints = floor($_productRewardPoints); ?>
+<script type="text/javascript">
+    // Set the view of a product
+    _paq.push(['setEcommerceView',
+        "<?= $_product->getSku(); ?>", // (required) SKU: Product unique identifier
+        "<?= $_product->getName(); ?>", // (optional) Product name
+        false,//"CATEGORYNAME", // (optional) Product category. You can also specify an array of up to 5 categories eg. ["CATEGORYNAME", "CATEGORYNAME2", "CATEGORYNAME3"]
+        <?= $_product->getFinalPrice(); ?>, // (recommended) Product price
+    ]);
+
+    // Set the view of a category
+    _paq.push(['setEcommerceView',
+        false,
+        false/*,
+        "CATEGORYNAME",*/ // You can also specify an array of up to 5 categories eg. ["CATEGORYNAME", "CATEGORYNAME2", "CATEGORYNAME3"]
+    ]);
+
+    _paq.push(['trackPageView']);
+</script>
+<script>
+    require(
+        ['jquery'],
+        function($) {
+            $(document).on('click touchstart', '.amsearch-overlay + .fotorama--fullscreen', function(evt) {
+                if ($(evt.srcElement).hasClass('fotorama__img--full') ||
+                $(evt.srcElement).hasClass('fotorama__caption__wrap') /*||
+                $(evt.srcElement).hasClass('fotorama__fullscreen-icon')*/) {
+                    evt.preventDefault();
+                    return;
+                }
+
+                if (typeof evt.srcElement === 'undefined' || $(evt.srcElement).hasClass('fotorama__fullscreen-icon')) {
+                    return;
+                }
+                
+                $.Fotorama.instances[0].cancelFullScreen();
+            });
+
+            if (<?= $_productRewardPoints ?> <= 0) return;
+            
+            $('.product-info-main .box-tocart .actions').before('<div class="product-points-info"><span><i class="fa fa-lg fa-star"></i> Questo prodotto vale <?= number_format($_productRewardPoints, 0, '', '') ?> <a href="#" id="product-rewards-link">Punti Fedeltà</a></span></div>');
+
+            var wokring = false;
+            $('#product-rewards-link').on('click touchstart', function(e) {
+                if (wokring) return;
+
+                wokring = true;
+
+                $('.product.data.items[role="tablist"]').tabs('activate', 2);
+                $([document.documentElement, document.body]).animate({
+                    scrollTop: $("#tab-label-custom\\.tab-title").offset().top
+                }, 1000);
+                
+                wokring = false;
+
+                e.preventDefault();
+                return false;
+            });
+        }
+    );
+</script>

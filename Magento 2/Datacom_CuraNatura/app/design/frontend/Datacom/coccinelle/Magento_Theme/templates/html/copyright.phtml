@@ -1,0 +1,9 @@
+<?php
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+<?php $_blockCopyright = $block->getCopyright(); ?>
+<?php $_blockCopyright = str_replace('Datacom', '<a href="https://www.datacominformatica.it/" target="_blank">Datacom</a>', $_blockCopyright); ?>
+<span class="copyright"><?php /* @escapeNotVerified */ echo $_blockCopyright ?></span>

@@ -1,0 +1,1 @@
++ /public_html/vendor/magento/module-checkout-agreements/Model/ResourceModel/Agreement/Grid/Collection.php  -> fix per correggere termini e condizioni non visibile da backoffice

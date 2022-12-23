@@ -1,0 +1,128 @@
+<?php
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magento\Newsletter\Block\Subscribe $block */
+
+?>
+<?php
+	$cmsPageHelper = $this->helper('Magento\Cms\Helper\Page');
+
+	$onlyLink = $block->getData('link') == 1;
+
+	$actionUrl = $onlyLink ? $cmsPageHelper->getPageUrl(14) : $block->getFormActionUrl();
+
+	$insertedEmail = $block->getRequest()->getParam('email');
+	if (empty($insertedEmail)) {
+
+	}
+
+	/*$backUrl = $block->getRequest()->getParam('referer');
+	if (empty($backUrl)) {
+		$backUrl = $block->getStoreManager()->getStore()->getBaseUrl();
+	} else {
+		$backUrl = $block->getUrlDecoder()->decode($backUrl);
+	}*/
+
+	$formId = 'newsletter-content-validate-detail';
+
+	if ($onlyLink) {
+		$formId .= '-1';
+	}
+?>
+<div class="block newsletter">
+	<?php if (!$onlyLink): ?>
+		<div class='newsletter-title'>
+			<label><span><span><?php /* @escapeNotVerified */ echo __('You will receive the coupon by e-mail at the specified address.') ?></span></label>
+		</div>
+	<?php endif; ?>
+    <div class="title"><strong><?php echo $block->escapeHtml(__('Newsletter')); ?></strong></div>
+    <div class="content">
+        <form class="form subscribe"
+            novalidate
+            action="<?php echo $block->escapeUrl($actionUrl); ?>"
+            method="post"
+            data-mage-init='{"validation": {"errorClass": "mage-error"}}'
+            id="<?php echo $formId; ?>">
+            <div class="field newsletter">
+                <label class="label" for="newsletter-content"><span><?php /* @escapeNotVerified */ echo $block->escapeHtml(__('Subscribe to our newsletter')) ?></span></label>
+                <div class="input-wrapper">
+                    <input class="form-control" name="email" type="email" id="newsletter-content"
+                                placeholder="<?php echo $block->escapeHtml(__('Email')) ?>"
+                                onfocus="this.placeholder = ''"
+                                onblur="this.placeholder = 'Email'"
+								<?php if (!empty($insertedEmail)): ?>
+									value="<?= $insertedEmail ?>"
+								<?php endif; ?>
+                                data-validate="{required:<?= $onlyLink ? 'false' : 'true' ?>, 'validate-email':true}"/>
+
+                </div>
+                <button class="action subscribe btn btn-default" title="<?php echo $block->escapeHtmlAttr(__('Subscribe')) ?>" type="submit">
+                    <span><?php echo $block->escapeHtml(__('Subscribe')) ?></span><i class="meigee-arrow-right"></i>
+                </button>
+            </div>
+			<?php if (!$onlyLink): ?>
+				<div class="actions-toolbar"></div>
+			<?php endif; ?>
+        </form>
+    </div>
+</div>
+<?php if ($onlyLink): ?>
+	<script type="text/javascript">
+		require(
+			['jquery'],
+			function($) {
+				var target = $('#<?php echo $formId; ?>');
+				var formAction = target.attr('action');
+				target.attr('action', formAction + '?referer_url=' + encodeURI(window.location.href));
+			}
+		);
+	</script>
+<?php else: ?>
+	<div class="actions-toolbar">
+		<a class="button" id="dtm-newsletter-prev" style="display: none;" href="<?= $block->getStoreManager()->getStore()->getBaseUrl() ?>"><span><?= __('Continue shopping') ?></span></a>
+	</div>
+	<script type="text/javascript">
+		require(
+			['jquery'],
+			function($) {
+				var newsletterEmail = $('#<?php echo $formId; ?> input[name="email"]');
+
+				if (newsletterEmail.val().length == 0) {
+					$.ajax({
+						method: 'POST',
+						url: '<?= $block->getUrl('curanatura/user/info') ?>',
+						dataType: 'json'
+					}).done(function(data) {
+						if (data.errors.length > 0) {
+							for (var i = 0; i < data.errors.length; i++) {
+								console.error(data.errors[i]);
+							}
+							return;
+						}
+
+						if (data.content.logged == 0) return;
+
+						newsletterEmail.attr('value', data.content.email);
+						newsletterEmail.val(data.content.email);
+					});
+				}
+
+				var target = $('#dtm-newsletter-prev');
+				var refererUrl = new URL(window.location.href).searchParams.get('referer_url');
+				if (refererUrl != null && typeof refererUrl !== 'undefined' && refererUrl.length > 0) {
+					target.attr('href', refererUrl);
+
+					if (refererUrl.indexOf('checkout') >= 0) {
+						target.find('span').html('<?= __('Go back to cart') ?>');
+					}
+				}
+				target.show();
+			}
+		);
+	</script>
+<?php endif; ?>

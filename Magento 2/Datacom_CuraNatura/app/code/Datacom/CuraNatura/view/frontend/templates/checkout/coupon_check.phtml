@@ -1,0 +1,91 @@
+<?php if ($block->getQuote()->getCouponCode() == 'newsletter01'): ?>
+    <script type="text/javascript">
+        require(
+            [
+                'jquery'
+            ],
+            function($) {
+                <?php if ($block->isLoggedIn()): ?>
+                    $.ajax({
+                        method: 'POST',
+                        url: '<?= $block->getUrl('curanatura/coupon/check') ?>',
+                        dataType: 'json',
+                        data: {'coupon': '<?= $block->getQuote()->getCouponCode() ?>', 'customer_id': <?= $block->getCustomer()->getId() ?>}
+                    }).done(function(data) {
+                        if (data != '1') return;
+
+                        var todo = function() {
+                            if ($('#checkoutSteps').length == 0) {
+                                setTimeout(function() {
+                                    todo();
+                                }, 50);
+                                return;
+                            }
+
+                            $('#checkoutSteps').prepend('<div class="message error">\
+                                <span><i class="fa fa-warning"></i> Hai già utilizzato il coupon inserito. Torna <a href="/it/checkout/cart/index">indietro</a> e disattivalo per riuscire a concludere l\'ordine.</span>\
+                                </div>');
+
+                            $('#checkoutSteps').addClass('disabled');
+                            $('#shipping').css({opacity: 0.6, 'pointer-events': 'none'});
+                            $('#opc-shipping_method').css({opacity: 0.6, 'pointer-events': 'none'});
+                            $('#checkout-payment-method-load').css({opacity: 0.6, 'pointer-events': 'none'});
+                        };
+
+                        todo();
+                    });
+                <?php else: ?>
+                    $(document).on('change', '#shipping .form.form-login input[type="email"][name="username"]', function() {
+                        var target = $(this);
+
+                        target.addClass('loading');
+                        
+                        $.ajax({
+                            method: 'POST',
+                            url: '<?= $block->getUrl('curanatura/coupon/check') ?>',
+                            dataType: 'json',
+                            data: {'coupon': '<?= $block->getQuote()->getCouponCode() ?>', 'email': $(this).val()}
+                        }).done(function(data) {
+                            if (data == '1') {
+                                target.addClass('invalid-coupon');
+                                target.after('<div class="message error coupon-mail"><span>Questa casella di posta ha già utilizzato il coupon sconto. Cambia coupon oppure cambia indirizzo e-mail.</span></div>');
+                                $('#checkoutSteps').addClass('disabled');
+                            } else {
+                                target.removeClass('invalid-coupon');
+                                $('.message.error.coupon-mail').remove();
+                                $('#checkoutSteps').removeClass('disabled');
+                            }
+
+                            target.removeClass('loading');
+                        });
+                    });
+
+                    var toCheckEmail = function() {
+                        if ($('#shipping .form.form-login input[type="email"][name="username"]').length == 0) {
+                            setTimeout(function() {
+                                toCheckEmail();
+                            }, 50);
+                            return;
+                        }
+
+                        $('#shipping .form.form-login input[type="email"][name="username"]').change();
+                    };
+                <?php endif; ?>
+            }
+        );
+    </script>
+    <style type="text/css">
+        <?php if ($block->isLoggedIn()): ?>
+        #checkoutSteps.disabled #shipping,
+        <?php endif; ?>
+        #checkoutSteps.disabled #opc-shipping_method,
+        #checkoutSteps.disabled #checkout-payment-method-load,
+        #checkoutSteps.disabled .checkout-payment-method .checkout-billing-address {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        #checkoutSteps.disabled .checkout-payment-method .checkout-billing-address + .discount-code {
+            display: none !important;
+        }
+    </style>
+<?php endif; ?>

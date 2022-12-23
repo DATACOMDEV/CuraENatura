@@ -1,0 +1,275 @@
+<?php 
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$currencysymbol = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
+$currency = $currencysymbol->getStore()->getCurrentCurrencyCode();
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$meigee_helper = $this->helper('\Meigee\Coccinelle\Helper\CoccinelleGeneral');
+$layout = $meigee_helper->getCustomThemeOptionCnf('coccinelle_layout', 'site_layout');
+$header_home_transparency = $meigee_helper->getCustomThemeOptionCnf('coccinelle_header', 'header_home_transparency');
+$home_menu_transparency = $meigee_helper->getCustomThemeOptionCnf('coccinelle_header', 'home_menu_transparency');
+?>
+
+<?php if($meigee_helper->getCustomThemeOptionCnf('coccinelle_layout', 'skinheader') == 'normandy_header' ||
+	$meigee_helper->getCustomThemeOptionCnf('coccinelle_layout', 'skinheader') == 'provence_header'){ ?>
+	<div class="header-wrapper">
+		<header class="page-header header-2<?php if ($header_home_transparency) : echo ' transparent-header'; endif; ?><?php if ($home_menu_transparency) : echo ' transparent-menu'; endif; ?><?php if($meigee_helper->getCustomThemeOptionCnf('coccinelle_layout', 'skinheader_swatch') == 'default'): echo ' default-swatch'; endif; ?>">
+			<div class="top-block">
+				<div class="container">
+					<div class="top-block-inner clearfix">
+						<?php echo $this->getChildHtml("header.welcome"); ?>
+					</div>
+				</div>
+			</div>
+			<div class="middle-block">
+				<div class="container">
+					<div class="middle-block-inner clearfix">
+						<div class="logo-wrapper pull-left">
+							<?php echo $this->getChildHtml("mobile.menu.btn"); ?>
+							<?php echo $this->getChildHtml("logo"); ?>
+						</div>
+						<div class="menu-wrapper">
+							<?php echo $this->getChildHtml("meigee_mobile_header"); ?>
+							<div class="toggle-nav clearfix"><?php echo $this->getChildHtml("catalog.topnav"); ?> </div>
+						</div>
+						<div class="right-block pull-right">
+							<!-- Side-menu -->
+							<div class="options-wrapper side-menu">
+								<div class="options-block side-menu-btn">
+									<span class="side-menu-icon"><i class="meigeeadditional-nav"></i></span>
+								</div>
+								<div class="options-dropdown side-menu-content">
+									<div class="side-menu-header"><span class="btn-close"><i class="meigee-close"></i></span></div>
+									<div class="dropdown-item">
+										<span class="label"><?php /* @escapeNotVerified */ echo __('My Account'); ?></span>
+										<?php echo $this->getChildHtml('top.links.meigee'); ?>
+									</div>
+		                			<?php echo $this->getChildHtml("store_language"); ?> 
+			                		<?php echo $this->getChildHtml("currency"); ?>
+								</div>
+							</div>
+							<?php echo $this->getChildHtml("topSearch"); ?>
+							<?php echo $this->getChildHtml("minicart"); ?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+		<?php echo $this->getChildHtml("meigee_sticky_header"); ?>
+	</div>
+<?php } 
+	else if($meigee_helper->getCustomThemeOptionCnf('coccinelle_layout', 'skinheader') == 'brittany_header'){ ?>
+	<div class="header-wrapper">
+		<header class="page-header header-3<?php if ($header_home_transparency) : echo ' transparent-header'; endif; ?><?php if ($home_menu_transparency) : echo ' transparent-menu'; endif; ?>">
+			<div class="top-block">
+				<div class="container">
+					<div class="top-block-inner clearfix">
+						<?php echo $this->getChildHtml("coccinelle.header.social.links"); ?>
+						<?php echo $this->getChildHtml("header.welcome"); ?>
+						<?php echo $this->getChildHtml("coccinelle.header.info"); ?>
+					</div>
+				</div>
+			</div>
+			<div class="middle-block">
+				<div class="container">
+					<div class="middle-block-inner clearfix">
+						<div class="search-wrapper pull-left">
+							<?php echo $this->getChildHtml("topSearch"); ?>
+						</div>
+						<div class="logo-wrapper">
+							<?php echo $this->getChildHtml("mobile.menu.btn"); ?>
+							<?php echo $this->getChildHtml("logo"); ?>
+						</div>
+						<div class="right-block pull-right">
+							<!-- Language-currency -->
+							<div class="options-wrapper language-currency-wrapper">
+				              <div class="options-block language-currency">
+				                <span class="currency"><?php echo $currency; ?></span>
+				                <span class="language"><?php echo $block->escapeHtml($storeManager->getStore()->getName()) ?></span>
+				                <i class="meigee-drop drop-icon"></i>
+				              </div>
+				              <div class="options-dropdown">
+			                	<?php echo $this->getChildHtml("store_language"); ?> 
+				                <?php echo $this->getChildHtml("currency"); ?>
+				              </div>
+				            </div>
+							<?php echo $this->getChildHtml("minicart"); ?>
+							<!-- Side-menu -->
+							<div class="options-wrapper side-menu">
+								<div class="options-block side-menu-btn">
+									<span class="side-menu-icon"><i class="meigeeadditional-nav"></i></span>
+								</div>
+								<div class="options-dropdown side-menu-content">
+									<div class="side-menu-header"><span class="btn-close"><i class="meigee-close"></i></span></div>
+									<div class="dropdown-item">
+										<span class="label"><?php /* @escapeNotVerified */ echo __('My Account'); ?></span>
+										<?php echo $this->getChildHtml('top.links.meigee'); ?>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="menu-wrapper">
+				<div class="container">
+					<?php echo $this->getChildHtml("meigee_mobile_header"); ?>
+					<div class="menu-inner clearfix">
+						<div class="toggle-nav clearfix"><?php echo $this->getChildHtml("catalog.topnav"); ?> </div>
+					</div>
+				</div>
+			</div>
+		</header>
+		<?php echo $this->getChildHtml("meigee_sticky_header"); ?>
+	</div>
+<?php } 
+	else if($meigee_helper->getCustomThemeOptionCnf('coccinelle_layout', 'skinheader') == 'lorraine_header'){ ?>
+	<div class="header-wrapper">
+		<header class="page-header header-4<?php if ($header_home_transparency) : echo ' transparent-header'; endif; ?><?php if ($home_menu_transparency) : echo ' transparent-menu'; endif; ?>">
+			<div class="top-block">
+				<div class="container">
+					<div class="top-block-inner clearfix">
+						<?php echo $this->getChildHtml("header.welcome"); ?>
+					</div>
+				</div>
+			</div>
+			<div class="middle-block">
+				<div class="container">
+					<div class="middle-block-inner clearfix">
+						<div class="logo-wrapper">
+							<?php echo $this->getChildHtml("mobile.menu.btn"); ?>
+							<?php echo $this->getChildHtml("logo"); ?>
+						</div>
+						<div class="search-wrapper">
+							<?php echo $this->getChildHtml("topSearch"); ?>
+						</div>
+						<div class="right-block pull-right">
+							<!-- Language-currency -->
+							<div class="options-wrapper language-currency-wrapper">
+				              <div class="options-block language-currency">
+				                <span class="currency"><?php echo $currency; ?></span>
+				                <span class="language"><?php echo $block->escapeHtml($storeManager->getStore()->getName()) ?></span>
+				                <i class="meigee-drop drop-icon"></i>
+				              </div>
+				              <div class="options-dropdown">
+			                	<?php echo $this->getChildHtml("store_language"); ?> 
+				                <?php echo $this->getChildHtml("currency"); ?>
+				              </div>
+				            </div>
+							<!-- Account -->
+							<div class="options-wrapper account-wrapper">
+								<div class="options-block">
+									<span class="title"><i class="meigee-account"></i></span>
+								</div>
+								<div class="options-dropdown">
+									<div class="dropdown-item account">
+										<span class="label"><?php /* @escapeNotVerified */ echo __('My Account'); ?></span>
+										<?php echo $this->getChildHtml('top.links.meigee'); ?>
+									</div>
+								</div>
+							</div>
+							<?php echo $this->getChildHtml("minicart"); ?>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="menu-wrapper">
+				<div class="container">
+					<?php echo $this->getChildHtml("meigee_mobile_header"); ?>
+					<div class="menu-inner clearfix">
+						<div class="toggle-nav clearfix"><?php echo $this->getChildHtml("catalog.topnav"); ?> </div>
+						<?php echo $this->getChildHtml("coccinelle.header.social.links"); ?>
+					</div>
+				</div>
+			</div>
+		</header>
+		<?php echo $this->getChildHtml("meigee_sticky_header"); ?>
+	</div>
+<?php } 
+	else { ?>
+	<div class="header-wrapper">
+		<header class="page-header header-1<?php if ($header_home_transparency) : echo ' transparent-header'; endif; ?><?php if ($home_menu_transparency) : echo ' transparent-menu'; endif; ?>">
+			<div class="top-block">
+				<div class="container">
+					<div class="top-block-inner clearfix">
+						<?php echo $this->getChildHtml("header.welcome"); ?>
+					</div>
+				</div>
+			</div>
+			<div class="middle-block">
+				<div class="container">
+					<div class="middle-block-inner clearfix">
+						<div class="logo-wrapper pull-left">
+							<?php echo $this->getChildHtml("mobile.menu.btn"); ?>
+							<?php echo $this->getChildHtml("logo"); ?>
+						</div>
+						<div class="right-block pull-right">
+							<!-- Language-currency -->
+							<!-- REMOVED <div class="options-wrapper language-currency-wrapper">
+				              <div class="options-block language-currency">
+				                <span class="currency"><?php echo $currency; ?></span>
+				                <span class="language"><?php echo $block->escapeHtml($storeManager->getStore()->getName()) ?></span>
+				                <i class="meigee-drop drop-icon"></i>
+				              </div>
+				              <div class="options-dropdown">
+			                	<?php echo $this->getChildHtml("store_language"); ?> 
+				                <?php echo $this->getChildHtml("currency"); ?>
+				              </div>
+				            </div> -->
+				            <!-- Wishlist -->
+							<span data-bind="scope: 'wishlist'" class="link wishlist top-link-wishlist">
+								<a href="<?php echo $this->getUrl('wishlist') ?>">
+									<i class="meigee-wishlist"></i>
+									<!-- ko if: wishlist().counter --><span data-bind="text: wishlist().counter" class="counter qty wishlist-counter"></span><!-- /ko -->
+								</a>
+							</span>
+							<!-- Account -->
+							<div class="options-wrapper account-wrapper">
+								<div class="options-block">
+									<span class="title"><i class="meigee-account"></i></span>
+								</div>
+								<div class="options-dropdown">
+									<div class="dropdown-item account">
+										<span class="label"><?php /* @escapeNotVerified */ echo __('My Account'); ?></span>
+										<?php echo $this->getChildHtml('top.links.meigee'); ?>
+									</div>
+								</div>
+							</div>
+							<!-- Side-menu -->
+							<!-- <div class="options-wrapper side-menu">
+								<div class="options-block side-menu-btn">
+									<span class="side-menu-icon"><i class="meigeeadditional-nav"></i></span>
+								</div>
+								<div class="options-dropdown side-menu-content">
+									<div class="side-menu-header"><span class="btn-close"><i class="meigee-close"></i></span></div>
+									<div class="dropdown-item">
+										<span class="label"><?php /* @escapeNotVerified */ // echo __('My Account'); ?></span>
+										<?php // echo $this->getChildHtml('top.links.meigee'); ?>
+									</div>
+		                			<?php // echo $this->getChildHtml("store_language"); ?> 
+			                		<?php // echo $this->getChildHtml("currency"); ?>
+								</div>
+							</div> -->
+							<?php echo $this->getChildHtml("minicart"); ?>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="menu-wrapper">
+				<div class="container">
+					<?php echo $this->getChildHtml("meigee_mobile_header"); ?>
+					<div class="menu-inner clearfix">
+						<div class="row">
+							<div class="hidden-xs hidden-sm hidden-md col-lg-10">
+								<div class="toggle-nav clearfix"><?php echo $this->getChildHtml("catalog.topnav"); ?> </div>
+							</div>
+							<div class="col-xs-12 col-lg-2 custom-fix-bootstrap">
+								<?php echo $this->getChildHtml("topSearch"); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+		<?php echo $this->getChildHtml("meigee_sticky_header"); ?>
+	</div>
+<?php } ?>

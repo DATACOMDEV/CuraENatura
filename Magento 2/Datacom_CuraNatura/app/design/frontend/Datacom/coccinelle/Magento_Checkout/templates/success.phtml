@@ -1,0 +1,131 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php /** @var $block \Magento\Checkout\Block\Onepage\Success */ ?>
+<!-- Tracciamento Trovaprezzi -->
+<?php
+	/*TP implementation*/
+	$objectManager =  \Magento\Framework\App\ObjectManager::getInstance();
+	$ordObj = $objectManager->create('Magento\Sales\Model\Order')->loadByIncrementId($block->getOrderId());
+	$products = $ordObj->getAllItems();
+	$TPtpi['chiaveMerchant'] = "bGNaM014SDZrYis4Vm54dGl3N0tXdjNHamtGMDQyeXo1czVWK1piWTBxMD01";
+	$TPtpi['email']=$ordObj['customer_email'];
+	$TPtpi['orderid'] = $block->getOrderId();
+	$TPtpi['amount'] = number_format ( $ordObj['grand_total'] , 2, '.','');
+	//Printing Script
+	//echo "<script type=\"text/javascript\" src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js\"></script>";
+	//echo "<script type=\"text/javascript\" src=\"https://tracking.trovaprezzi.it/javascripts/tracking.min.js\"></script>";
+	echo "<script type=\"text/javascript\">";
+	echo "window._tt = window._tt || [];";
+	echo "window._tt.push({ event: \"setAccount\", id: '". $TPtpi['chiaveMerchant'] ."' });";
+	echo "window._tt.push({ event: \"setOrderId\", order_id: '" . $TPtpi['orderid'] . "' });";
+	echo "window._tt.push({ event: \"setEmail\", email: '" . $TPtpi['email'] . "' });";
+	foreach($products as $prod){
+		$singleProd = $prod->getData();
+		$prodName = str_replace("'", "", $singleProd['name']);
+		echo "window._tt.push({ event: \"addItem\", sku: '" . $singleProd['item_id'] . "', product_name: '" . $prodName . "' });";
+	}
+	echo "window._tt.push({ event: \"setAmount\", amount: '" . $TPtpi['amount'] . "' });";
+	echo "window._tt.push({ event: \"orderSubmit\"});";
+	echo "</script>";
+	/*TP implementation END*/
+?>
+<script>
+	require(
+		[
+			'jquery'
+		],
+		function($) {
+			$.getScript('https://tracking.trovaprezzi.it/javascripts/tracking.min.js');
+		}
+	);
+</script>
+<!-- Fine tracciamento Trovaprezzi -->
+<div class="checkout-success">
+    <?php if ($block->getOrderId()):?>
+        <?php if ($block->getCanViewOrder()) :?>
+            <p><?= __('Your order number is: %1.', sprintf('<a href="%s" class="order-number"><strong>%s</strong></a>', $block->escapeHtml($block->getViewOrderUrl()), $block->escapeHtml($block->getOrderId()))) ?></p>
+        <?php  else :?>
+            <p><?= __('Your order # is: <span>%1</span>.', $block->escapeHtml($block->getOrderId())) ?></p>
+        <?php endif;?>
+            <p><?= /* @escapeNotVerified */ __('We\'ll email you an order confirmation with details and tracking info.') ?></p>
+    <?php endif;?>
+
+    <?= $block->getAdditionalInfoHtml() ?>
+
+    <div class="actions-toolbar">
+        <div class="primary">
+            <a class="action primary continue" href="<?= /* @escapeNotVerified */ $block->getContinueUrl() ?>"><span><?= /* @escapeNotVerified */ __('Continue Shopping') ?></span></a>
+        </div>
+    </div>
+</div>
+
+<!-- Tracciamento kelkoo -->
+<?php
+$_order = $this->helper('Datacom\CuraNatura\Helper\Order')->getOrderByIncrementId($block->getOrderId());
+$_items = $_order->getAllItems();
+?>
+<script type="text/javascript">
+var _kkstrack = {
+	merchantInfo : [{ country:'IT', merchantId:'100455064' }],
+	orderValue: '<?php echo $_order->getGrandTotal(); ?>',
+	orderId: '<?php echo $block->getOrderId() ?>',
+	basket: [
+		<?php foreach ($_items as $_item) { ?>
+		{
+			productname: '<?php echo $_item->getName() ?>',
+			productid: '<?php echo $_item->getSku() ?>',
+			quantity: '<?php echo $_item->getQtyOrdered() ?>',
+			price: '<?php echo $_item->getPriceInclTax() ?>'
+		},
+		<?php } ?>
+	]
+};
+(function() {
+	var s = document.createElement('script');
+	s.type = 'text/javascript';
+	s.async = true;
+	s.src = 'https://s.kk-resources.com/ks.js';
+	var x = document.getElementsByTagName('script')[0];
+	x.parentNode.insertBefore(s, x);
+})();
+</script>
+<!-- Fine tracciamento kelkoo -->
+
+<!-- Tracciamento Datatrics -->
+<script type="text/javascript">
+	<?php $_cartSubtotal = 0.00; ?>
+	<?php foreach ($products as $_curCartItem): ?>
+		<?php $_cartSubtotal += $_curCartItem->getRowTotalInclTax(); ?>
+		_paq.push(
+			[
+				'addEcommerceItem',
+				"<?php echo $_curCartItem->getSku(); ?>",
+				"<?php echo $_curCartItem->getName(); ?>",
+				false,//"CATEGORYNAME", // (optional) Product category. You can also specify an array of up to 5 categories eg. ["CATEGORYNAME", "CATEGORYNAME2", "CATEGORYNAME3"]
+				<?php echo $_curCartItem->getRowTotalInclTax() / $_curCartItem->getQtyOrdered(); ?>,
+				<?php echo $_curCartItem->getQtyOrdered(); ?>
+			]
+		);
+	<?php endforeach; ?>
+
+	// Specifiy the order details
+	_paq.push(['trackEcommerceOrder',
+		"<?php echo $block->getOrderId() ?>", // (required) Unique Order ID
+		<?php echo $_order->getGrandTotal(); ?>/*, // (required) Order Revenue grand total (includes tax, shipping, and subtracted discount)
+		5.5, // (optional) Order sub total (excludes shipping)
+		5.5, // (optional) Tax amount
+		5.5, // (optional) Shipping amount
+		false*/ // (optional) Discount offered (set to false for unspecified parameter)
+	]);
+
+	_paq.push(['trackPageView']);
+
+</script>
+<!-- Fine tracciamento Datatrics -->

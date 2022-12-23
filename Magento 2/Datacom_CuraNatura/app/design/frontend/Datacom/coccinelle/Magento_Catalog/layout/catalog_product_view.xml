@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+
+        <referenceBlock name="product.info.details">
+            <block class="Meigee\Coccinelle\Block\Template" name="custom.tab" template="Meigee_Coccinelle::custom_tab.phtml" group="detailed_info">
+                <arguments>
+                    <argument translate="true" name="title" xsi:type="string">Punti fedeltà</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+        <container name="bottom.information.block" htmlTag="div" htmlClass="bottom-information-block clearfix hidden-xs hidden-sm hidden-ms hidden-lg hidden-xl">
+            <container name="product.info.stock.sku.second" label="Product auxiliary info" htmlTag="div" htmlClass="product-info-stock-sku" before="-" />
+        </container>
+        <container name="product.timer.socials">
+            <block class="Magento\Framework\View\Element\Template" name="product.timer" before="-" template="Magento_Catalog::product/product_timer_wrapper.phtml"/>
+        </container>
+
+        <container name="product.qty.block.options"/>
+        <container name="product.qty.block.simple" before="-"/>
+        <container name="product.options.block.top" before="-"/>
+        <container name="product.options.block.bottom" after="-"/>
+        <container name="product.under.description"/>
+
+		<move element="page.main.title" destination="product.info.main" before="-"/>
+        <move element="product.info.stock.sku" destination="product.info.stock.sku.second" before="-"/>
+        <move element="product.info.review" destination="product.info.main" after="page.main.title"/>
+        <move element="product.price.tier" destination="product.info.main" before="product.info.stock.sku.second"/>
+        <move element="bottom.information.block" destination="product.info.main" after="-" />
+        <move element="product.timer.socials" destination="product.info.main" before="product.info.extrahint" />
+        <move element="product.qty.block.options" destination="product.info.addtocart.additional" after="-" />
+        <move element="product.qty.block.simple" destination="product.info.addtocart" after="-" />
+        <move element="product.options.block.top" destination="product.info.options.wrapper" before="-" />
+        <move element="product.options.block.bottom" destination="product.info.options.wrapper" after="-" />
+        <move element="product.under.description" destination="product.info.main" after="product.info.overview" />
+		<move element="product.info.overview" destination="product.info.main" after="page.main.title" />
+        <move element="product.info.price" destination="product.info.main" after="page.main.title"/>
+    </body>
+</page>

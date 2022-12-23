@@ -1,0 +1,132 @@
+<?php
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+	$cmsPageHelper = $this->helper('Magento\Cms\Helper\Page');
+
+	$onlyLink = $block->getData('link') == 1;
+
+	$actionUrl = $onlyLink ? $cmsPageHelper->getPageUrl(14) : $block->getFormActionUrl();
+
+	$insertedEmail = $block->getRequest()->getParam('email');
+	if (empty($insertedEmail)) {
+
+	}
+
+	/*$backUrl = $block->getRequest()->getParam('referer');
+	if (empty($backUrl)) {
+		$backUrl = $block->getStoreManager()->getStore()->getBaseUrl();
+	} else {
+		$backUrl = $block->getUrlDecoder()->decode($backUrl);
+	}*/
+?>
+<div class="newsletter">
+	<div class='newsletter-title'>
+		<h2><span><?php /* @escapeNotVerified */ echo __('Subscribe to the Newsletter.') ?></span></h2>
+		<label><span><?php /* @escapeNotVerified */ echo __('Get e-mail updates about our latest shop and special offers.') ?></span><br /><span><?php /* @escapeNotVerified */ echo __('You will get a coupon with a 10% discount on your first order.') ?></span></label>
+	</div>
+	<?php if (!$onlyLink): ?>
+		<div class='newsletter-title'>
+			<label><span><span><?php /* @escapeNotVerified */ echo __('You will receive the coupon by e-mail at the specified address.') ?></span></label>
+		</div>
+	<?php endif; ?>
+	<form class="form subscribe"
+		novalidate
+		action="<?php /* @escapeNotVerified */ echo $actionUrl ?>"
+		method="post"
+		data-mage-init='{"validation": {"errorClass": "mage-error"}}'
+		id="newsletter-validate-detail<?= $onlyLink ? '-1' : '' ?>">
+
+		<div class="control">
+			<input name="email" type="email" id="newsletter<?= $onlyLink ? '-1' : '' ?>"
+						placeholder="<?php /* @escapeNotVerified */ echo __('Enter your email address') ?>"
+						<?php if (!empty($insertedEmail)): ?>
+							value="<?= $insertedEmail ?>"
+						<?php endif; ?>
+						data-validate="{required:<?= $onlyLink ? 'false' : 'true' ?>, 'validate-email':true}"/>
+			
+			<?php if ($onlyLink): ?>
+				<input type="hidden" name="referer" value="<?= $block->getUrlEncoder()->encode($this->getUrl()) ?>" />
+
+				<button class="action subscribe primary" title="<?php /* @escapeNotVerified */ echo __('Subscribe') ?>" type="submit">
+				<span><?php /* @escapeNotVerified */ echo __('Subscribe') ?></span>
+				</button>
+				
+			<?php endif; ?>
+		</div>
+		<?php if (!$onlyLink): ?>
+			<div class="actions-toolbar"></div>
+			<script type="text/javascript">
+				require(
+					['jquery'],
+					function($) {
+						$('#newsletter-validate-detail #newsletter').after('<button class="action subscribe primary" title="<?php /* @escapeNotVerified */ echo __('Subscribe') ?>" type="submit">\
+				<span><?php /* @escapeNotVerified */ echo __('Subscribe') ?></span>\
+				</button>');
+					}
+				);
+			</script>
+		<?php endif; ?>
+	</form>
+</div>
+<?php if ($onlyLink): ?>
+	<script type="text/javascript">
+		require(
+			['jquery'],
+			function($) {
+				var target = $('#newsletter-validate-detail-1');
+				var formAction = target.attr('action');
+				target.attr('action', formAction + '?referer_url=' + encodeURI(window.location.href));
+			}
+		);
+	</script>
+<?php else: ?>
+	<div class="actions-toolbar">
+		<a class="button" id="dtm-newsletter-prev" style="display: none;" href="<?= $block->getStoreManager()->getStore()->getBaseUrl() ?>"><span><?= __('Continue shopping') ?></span></a>
+	</div>
+	<script type="text/javascript">
+		require(
+			['jquery'],
+			function($) {
+				var newsletterEmail = $('#newsletter-validate-detail input[name="email"]');
+
+				if (newsletterEmail.val().length == 0) {
+					$.ajax({
+						method: 'POST',
+						url: '<?= $block->getUrl('oilbar/user/info') ?>',
+						dataType: 'json'
+					}).done(function(data) {
+						if (data.errors.length > 0) {
+							for (var i = 0; i < data.errors.length; i++) {
+								console.error(data.errors[i]);
+							}
+							return;
+						}
+
+						if (data.content.logged == 0) return;
+
+						newsletterEmail.attr('value', data.content.email);
+						newsletterEmail.val(data.content.email);
+					});
+				}
+
+				var target = $('#dtm-newsletter-prev');
+				var refererUrl = new URL(window.location.href).searchParams.get('referer_url');
+				if (refererUrl != null && typeof refererUrl !== 'undefined' && refererUrl.length > 0) {
+					target.attr('href', refererUrl);
+
+					if (refererUrl.indexOf('checkout') >= 0) {
+						target.find('span').html('<?= __('Go back to cart') ?>');
+					}
+				}
+				target.show();
+			}
+		);
+	</script>
+<?php endif; ?>

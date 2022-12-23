@@ -1,0 +1,439 @@
+#SP-VCU-5771759
+#RewriteEngine on
+#<If "%{REMOTE_ADDR} !='94.138.175.51'">
+#Deny from all
+#RedirectMatch 403 ^.*$
+#</If>
+
+#Flood:
+deny from 20.105.120.197
+
+
+#SetEnv PHPRC /home/customer/www/curaenatura.com/public_html/php.ini
+############################################
+## DATACOM Controllo accessi non validi/riduzione utilizzo risorse
+#    BLOCK BLANK USER AGENTS
+    RewriteCond %{HTTP_USER_AGENT} ^-?$
+    RewriteRule ^ - [F]
+
+############################################
+## DATACOM - gestione referral spam
+	RewriteCond %{HTTP_REFERER} depositfiles\-porn\.ga [NC,OR]
+	RewriteCond %{HTTP_REFERER} youporn\-forum\.ga [NC,OR]
+	RewriteCond %{HTTP_REFERER} generalporn\.org [NC,OR]
+	RewriteCond %{HTTP_REFERER} theguardlan\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} rapidgator\-porn\.ga [NC,OR]
+	RewriteCond %{HTTP_REFERER} googlsucks\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} pornhub\-forum\.uni\.me [NC,OR]
+	RewriteCond %{HTTP_REFERER} free\-share\-buttons\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} site3\.free\-share\-buttons\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} site1\.free\-share\-buttons\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} site5\.free\-share\-buttons\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} youporn\-forum\.uni\.me [NC,OR]
+	RewriteCond %{HTTP_REFERER} buttons\-for\-your\-website\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} buy\-cheap\-online\.info [NC,OR]
+	RewriteCond %{HTTP_REFERER} best\-seo\-offer\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} semalt\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} semalt\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} best\-seo\-solution\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} darodar\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} priceg\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} 7makemoneyonline\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} buttons\-for\-website\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} ilovevitaly\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} ilovevitaly\.co [NC,OR]
+	RewriteCond %{HTTP_REFERER} econom\.co [NC,OR]
+	RewriteCond %{HTTP_REFERER} spyonweb\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} iskalko\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} lomb\.co [NC,OR]
+	RewriteCond %{HTTP_REFERER} lombia\.co [NC,OR]
+	RewriteCond %{HTTP_REFERER} bestwebsitesawards\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} 2gis\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} voluto\.com\.au [NC,OR]
+	RewriteCond %{HTTP_REFERER} the\-caledon\.co\.uk [NC,OR]
+	RewriteCond %{HTTP_REFERER} buy\-forum\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} justlikethis\.co [NC,OR]
+	RewriteCond %{HTTP_REFERER} hulfingtonpost\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} cenoval\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} o\-o\-6\-o\-o\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} humanorightswatch\.org [NC,OR]
+	RewriteCond %{HTTP_REFERER} simple\-share\-buttons\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} sharebutton\.org [NC,OR]
+	RewriteCond %{HTTP_REFERER} aliexpress\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} anticrawler\.org [NC,OR]
+	RewriteCond %{HTTP_REFERER} social\-buttons\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} adcash\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} adviceforum\.info [NC,OR]
+	RewriteCond %{HTTP_REFERER} anticrawler\.org [NC,OR]
+	RewriteCond %{HTTP_REFERER} blackhatworth\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} cenokos\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} cityadspix\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} edakgfvwql\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} gobongo\.info [NC,OR]
+	RewriteCond %{HTTP_REFERER} iskalko\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} kambasoft\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} luxup\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} myftpupload\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} prodvigator\.ua [NC,OR]
+	RewriteCond %{HTTP_REFERER} resellerclub\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} savetubevideo\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} screentoolkit\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} seoexperimenty\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} slftsdybbg\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} socialseet\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} superiends\.org [NC,OR]
+	RewriteCond %{HTTP_REFERER} vodkoved\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} sharebutton\.net [NC,OR]
+	RewriteCond %{HTTP_REFERER} websocial\.me [NC,OR]
+	RewriteCond %{HTTP_REFERER} ykecwqlixx\.ru [NC,OR]
+	RewriteCond %{HTTP_REFERER} 76brighton\.co\.uk [NC,OR]
+	RewriteCond %{HTTP_REFERER} paparazzistudios\.com\.au [NC,OR]
+	RewriteCond %{HTTP_REFERER} powitania\.pl [NC,OR]
+	RewriteCond %{HTTP_REFERER} sharebutton\.net [NC,OR]
+	RewriteCond %{HTTP_REFERER} tasteidea\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} descargar\-musica\-gratis\.net [NC,OR]
+	RewriteCond %{HTTP_REFERER} torontoplumbinggroup\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} cyprusbuyproperties\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} Get\-Free\-Traffic\-Now\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} event\-tracking\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} anal\-acrobats\.hol\.es [NC,OR]
+	RewriteCond %{HTTP_REFERER} free\-social\-buttons\.com [NC,OR]
+	RewriteCond %{HTTP_REFERER} luxuryemotions\.net [NC,OR]
+	RewriteCond %{HTTP_REFERER} smailik\.org [NC]
+	RewriteCond %{HTTP_REFERER} seekport\.com [NC]
+	RewriteRule .* %{HTTP_REFERER} [R,L]
+	
+############################################
+## overrides deployment configuration mode value
+## use command bin/magento deploy:mode:set to switch modes
+
+#   SetEnv MAGE_MODE developer
+
+############################################
+## uncomment these lines for CGI mode
+## make sure to specify the correct cgi php binary file name
+## it might be /cgi-bin/php-cgi
+
+#    Action php5-cgi /cgi-bin/php5-cgi
+#    AddHandler php5-cgi .php
+
+############################################
+## GoDaddy specific options
+
+#   Options -MultiViews
+
+## you might also need to add this line to php.ini
+##     cgi.fix_pathinfo = 1
+## if it still doesn't work, rename php.ini to php5.ini
+
+############################################
+## this line is specific for 1and1 hosting
+
+    #AddType x-mapp-php5 .php
+    #AddHandler x-mapp-php5 .php
+
+############################################
+## default index file
+
+    DirectoryIndex index.php
+
+<IfModule mod_php5.c>
+############################################
+## adjust memory limit
+
+    php_value memory_limit 756M
+    php_value max_execution_time 18000
+
+############################################
+## disable automatic session start
+## before autoload was initialized
+
+    php_flag session.auto_start off
+
+############################################
+## enable resulting html compression
+
+    #php_flag zlib.output_compression on
+
+###########################################
+## disable user agent verification to not break multiple image upload
+
+    php_flag suhosin.session.cryptua off
+</IfModule>
+<IfModule mod_php7.c>
+############################################
+## adjust memory limit
+
+    php_value memory_limit 756M
+    php_value max_execution_time 18000
+
+############################################
+## disable automatic session start
+## before autoload was initialized
+
+    php_flag session.auto_start off
+
+############################################
+## enable resulting html compression
+
+    #php_flag zlib.output_compression on
+
+###########################################
+## disable user agent verification to not break multiple image upload
+
+    php_flag suhosin.session.cryptua off
+</IfModule>
+<IfModule mod_security.c>
+###########################################
+## disable POST processing to not break multiple image upload
+
+    
+    
+</IfModule>
+
+<IfModule mod_deflate.c>
+
+############################################
+## enable apache served files compression
+## http://developer.yahoo.com/performance/rules.html#gzip
+
+    # Insert filter on all content
+    ###SetOutputFilter DEFLATE
+    # Insert filter on selected content types only
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json image/svg+xml
+
+    # Netscape 4.x has some problems...
+    #BrowserMatch ^Mozilla/4 gzip-only-text/html
+
+    # Netscape 4.06-4.08 have some more problems
+    #BrowserMatch ^Mozilla/4\.0[678] no-gzip
+
+    # MSIE masquerades as Netscape, but it is fine
+    #BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+    # Don't compress images
+    #SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+
+    # Make sure proxies don't deliver the wrong content
+    #Header append Vary User-Agent env=!dont-vary
+
+</IfModule>
+
+<IfModule mod_ssl.c>
+
+############################################
+## make HTTPS env vars available for CGI mode
+
+    SSLOptions StdEnvVars
+
+</IfModule>
+
+############################################
+## workaround for Apache 2.4.6 CentOS build when working via ProxyPassMatch with HHVM (or any other)
+## Please, set it on virtual host configuration level
+
+##    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+############################################
+
+<IfModule mod_rewrite.c>
+
+############################################
+## enable rewrites
+
+    Options +SymLinksIfOwnerMatch
+    RewriteEngine on
+
+############################################
+## you can put here your magento root folder
+## path relative to web root
+
+    #RewriteBase /magento/
+
+############################################
+## workaround for HTTP authorization
+## in CGI environment
+
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+############################################
+## TRACE and TRACK HTTP methods disabled to prevent XSS attacks
+
+    
+############################################
+## DATACOM Redirect voci finte menu di navigazione
+
+    RewriteRule ^it/cosmetici-per-donna-e-uomo.html*$ /it/cosmetici-uomo-donna.html [R=301,L]
+    RewriteRule ^it/cosmetici-per-donna-e-uomo/test.html*$ /it/cosmetici-uomo-donna.html [R=301,L]
+    RewriteRule ^it/integratorimenu.html*$ /it/integratori.html [R=301,L]
+    RewriteRule ^it/integratorimenu/1.html*$ /it/integratori.html [R=301,L]
+    RewriteRule ^it/fitoterapia-e-omeopatia.html*$ /it/fitoterapia-erboristeria.html [R=301,L]
+    RewriteRule ^it/fitoterapia-e-omeopatia/test-fito.html*$ /it/fitoterapia-erboristeria.html [R=301,L]
+    RewriteRule ^it/parafarmaci-online.html*$ /it/parafarmaci.html [R=301,L]
+    RewriteRule ^it/parafarmaci-online/test-parafarmaci.html*$ /it/parafarmaci.html [R=301,L]
+    RewriteRule ^it/articoli-per-animali.html*$ /it/veterinaria.html [R=301,L]
+    RewriteRule ^it/articoli-per-animali/test-veterinaria.html*$ /it/veterinaria.html [R=301,L]
+    RewriteRule ^it/farmaci-da-banco.html*$ /it/farmaci-da-banco-sop-e-otc.html [R=301,L]
+    RewriteRule ^it/farmaci-da-banco/test-farmaci-banco.html*$ /it/farmaci-da-banco-sop-e-otc.html [R=301,L]
+
+############################################
+## redirect for mobile user agents
+
+    #RewriteCond %{REQUEST_URI} !^/mobiledirectoryhere/.*$
+    #RewriteCond %{HTTP_USER_AGENT} "android|blackberry|ipad|iphone|ipod|iemobile|opera mobile|palmos|webos|googlebot-mobile" [NC]
+    #RewriteRule ^(.*)$ /mobiledirectoryhere/ [L,R=302]
+
+############################################
+## never rewrite for existing files, directories and links
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-l
+
+############################################
+## rewrite everything else to index.php
+
+    RewriteRule .* index.php [L]
+
+</IfModule>
+
+
+############################################
+## Prevent character encoding issues from server overrides
+## If you still have problems, use the second line instead
+
+    AddDefaultCharset Off
+    #AddDefaultCharset UTF-8
+    AddType 'text/html; charset=UTF-8' html
+
+<IfModule mod_expires.c>
+
+############################################
+## Add default Expires header
+## http://developer.yahoo.com/performance/rules.html#expires
+
+    ExpiresDefault "access plus 1 year"
+    ExpiresByType text/html A0
+    ExpiresByType text/plain A0
+
+</IfModule>
+
+###########################################
+## Deny access to root files to hide sensitive application information
+	RedirectMatch 403 /\.git
+
+<Files composer.json>
+	Require all denied
+</Files>
+<Files composer.lock>
+	Require all denied
+</Files>
+<Files .gitignore>
+	Require all denied
+</Files>
+<Files .htaccess>
+	Require all denied
+</Files>
+<Files .htaccess.sample>
+	Require all denied
+</Files>
+<Files .php_cs.dist>
+	Require all denied
+</Files>
+<Files .travis.yml>
+	Require all denied
+</Files>
+<Files CHANGELOG.md>
+	Require all denied
+</Files>
+<Files COPYING.txt>
+	Require all denied
+</Files>
+<Files Gruntfile.js>
+	Require all denied
+</Files>
+<Files LICENSE.txt>
+	Require all denied
+</Files>
+<Files LICENSE_AFL.txt>
+	Require all denied
+</Files>
+<Files nginx.conf.sample>
+	Require all denied
+</Files>
+<Files package.json>
+	Require all denied
+</Files>
+<Files php.ini.sample>
+	Require all denied
+</Files>
+<Files README.md>
+	Require all denied
+</Files>
+<Files auth.json>
+	Require all denied
+</Files>
+<Files magento_umask>
+	Require all denied
+</Files>
+
+# For 404s and 403s that aren't handled by the application, show plain 404 response
+ErrorDocument 404 /pub/errors/404.php
+ErrorDocument 403 /pub/errors/404.php
+
+################################
+## If running in cluster environment, uncomment this
+## http://developer.yahoo.com/performance/rules.html#etags
+
+    #FileETag none
+
+# ######################################################################
+# # INTERNET EXPLORER                                                  #
+# ######################################################################
+
+# ----------------------------------------------------------------------
+# | Document modes                                                     |
+# ----------------------------------------------------------------------
+
+# Force Internet Explorer 8/9/10 to render pages in the highest mode
+# available in the various cases when it may not.
+#
+# https://hsivonen.fi/doctype/#ie8
+#
+# (!) Starting with Internet Explorer 11, document modes are deprecated.
+# If your business still relies on older web apps and services that were
+# designed for older versions of Internet Explorer, you might want to
+# consider enabling `Enterprise Mode` throughout your company.
+#
+# https://msdn.microsoft.com/en-us/library/ie/bg182625.aspx#docmode
+# http://blogs.msdn.com/b/ie/archive/2014/04/02/stay-up-to-date-with-enterprise-mode-for-internet-explorer-11.aspx
+
+<IfModule mod_headers.c>
+
+    Header set X-UA-Compatible "IE=edge"
+
+    # `mod_headers` cannot match based on the content-type, however,
+    # the `X-UA-Compatible` response header should be send only for
+    # HTML documents and not for the other resources.
+
+    <FilesMatch "\.(appcache|atom|bbaw|bmp|crx|css|cur|eot|f4[abpv]|flv|geojson|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|topojson|tt[cf]|txt|vcard|vcf|vtt|webapp|web[mp]|webmanifest|woff2?|xloc|xml|xpi)$">
+        Header unset X-UA-Compatible
+    </FilesMatch>
+
+	Header add Access-Control-Allow-Origin "*"
+    Header add Access-Control-Allow-Headers "origin, x-requested-with, content-type"
+    Header add Access-Control-Allow-Methods "PUT, GET, POST, DELETE, OPTIONS, PATCH"
+	
+</IfModule>
+# Commented by SiteGround automated systems
+#AddHandler application/x-httpd-php71 .php .php5 .php4 .php3
+
+# SP BEGIN php handler
+<IfModule mod_fcgid.c>
+          AddHandler fcgid-script .php .php5 .php7 .phtml
+          FcgidWrapper    /usr/local/cpanel/cgi-sys/sp-ea-php71 .php
+          FcgidWrapper    /usr/local/cpanel/cgi-sys/sp-ea-php71 .php5
+          FcgidWrapper    /usr/local/cpanel/cgi-sys/sp-ea-php71 .php7
+          FcgidWrapper    /usr/local/cpanel/cgi-sys/sp-ea-php71 .phtml
+</IfModule>
+# SP END php handler
+

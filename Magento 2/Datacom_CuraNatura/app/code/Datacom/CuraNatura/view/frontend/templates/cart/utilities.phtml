@@ -1,0 +1,69 @@
+<?php $_cartItems = $block->getItems(); ?>
+<?php $_cartSubtotal = 0.00; ?>
+<script type="text/javascript">
+    // Add all products found in the cart
+    <?php foreach ($_cartItems as $_curCartItem): ?>
+        <?php $_cartSubtotal += $_curCartItem->getRowTotalInclTax(); ?>
+        _paq.push(
+            [
+                'addEcommerceItem',
+                "<?= $_curCartItem->getSku(); ?>",
+                "<?= $_curCartItem->getName(); ?>",
+                false,
+                <?= $_curCartItem->getRowTotalInclTax() / $_curCartItem->getQty(); ?>,
+                <?= $_curCartItem->getQty(); ?>
+            ]
+        );
+    <?php endforeach; ?>
+    <?php $_rewardPoints = $_cartSubtotal / 2; ?>
+    <?php $_rewardPoints = floor($_rewardPoints); ?>
+    /*
+    [
+            'addEcommerceItem',
+            "SKU", // (required) SKU: Product unique identifier
+            "NAME", // (optional) Product name
+            "CATEGORYNAME", // (optional) Product category. You can also specify an array of up to 5 categories eg. ["CATEGORYNAME", "CATEGORYNAME2", "CATEGORYNAME3"]
+            20, // (recommended) Product price
+            1 // (optional, default to 1) Product quantity
+        ]
+     */
+
+    // Specifiy the order details
+    _paq.push(['trackEcommerceCartUpdate', <?= $_cartSubtotal; ?>]); // (required) Cart amount
+    _paq.push(['trackPageView']);
+
+    require(
+        ['jquery'],
+        function($) {
+            var checkLoggedUser = function() {
+                var notInitialized = typeof window.isCustomerLoggedIn == 'undefined';
+                if (notInitialized) {
+                    setTimeout(function() {
+                        checkLoggedUser();
+                    }, 50);
+                    return;
+                }
+
+                if (window.isCustomerLoggedIn) return;
+
+                if (<?= $_rewardPoints ?> <= 0) return;
+
+                var href = $('.header.links .authorization-link a').first().attr('href');
+                $('.form.form-cart').before('<div class="point-reward-suggestion"><p><i class="fa fa-lg fa-warning"></i>&nbsp;&nbsp;Assicurati di effettuare il <a href="' + href + '">login</a> o <a href="/it/customer/account/create/">registrarti</a> per guadagnare <?= number_format($_rewardPoints, 0, '', '') ?> punti fedeltà!</span></p>');
+                //$_cartSubtotal
+            };
+
+            checkLoggedUser();
+        }
+    );
+</script>
+<style type="text/css">
+    .point-reward-suggestion {
+        background-color: #fdf0d5;
+        color: #6f4400;
+        padding: 9px 11px 1px;
+    }
+    .point-reward-suggestion a {
+        text-decoration: underline !important;
+    }
+</style>

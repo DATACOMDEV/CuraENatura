@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+      <referenceContainer name="page.wrapper">
+        <block class="Meigee\Coccinelle\Block\Template" name="meigee_header" template="Meigee_Coccinelle::html/header.phtml" before="-">
+          <block class="Meigee\Coccinelle\Block\Frontend\CustomLogo" name="logo" as="logo" template="Meigee_Coccinelle::html/header/logo.phtml">
+            <arguments>
+              <argument name="logo_file" xsi:type="string">images/logo.png</argument>
+              <argument name="logo_img_width" xsi:type="number">242</argument>
+              <argument name="logo_img_height" xsi:type="number">26</argument>
+            </arguments>
+          </block>
+
+          <block class="Magento\Theme\Block\Html\Header" name="header.welcome" template="Meigee_Coccinelle::html/header/welcome.phtml" />
+          <!-- <block class="Magento\Framework\View\Element\Template" name="top.search" as="topSearch" template="Magento_Search::form.mini.phtml" /> -->
+          <block class="Magento\Store\Block\Switcher" name="store_language" as="store_language" template="switch/languages.phtml"/>
+          <block class="Meigee\Coccinelle\Block\Frontend\Currency" name="currency" after="store_language" template="Magento_Directory::currency.phtml" />
+          <block class="Magento\Framework\View\Element\Template" name="mobile.menu.btn" template="Meigee_Coccinelle::html/header/topmenu_btn.phtml" />
+
+          <block class="Meigee\Coccinelle\Block\Template" name="meigee_sticky_header" template="Meigee_Coccinelle::html/sticky_header.phtml" ifconfig="coccinelle_general/coccinelle_header/sticky_header">
+          
+            <!-- Hesder 1 Sticky Logo -->
+            <block class="Meigee\Coccinelle\Block\Frontend\CustomLogo" name="sticky.logo" as="sticky.logo" template="Meigee_Coccinelle::html/header/small_logo.phtml">
+              <arguments>
+                <argument name="logo_img_width" xsi:type="number">242</argument>
+                <argument name="logo_img_height" xsi:type="number">26</argument>
+                <argument name="logo_file" xsi:type="string">images/small_logo.png</argument>
+              </arguments>
+            </block>
+            
+            <block class="Magento\Theme\Block\Html\Topmenu" name="sticky.catalog.topnav" template="Meigee_Coccinelle::html/header/topmenu_sticky.phtml" />
+            <block class="Magento\Framework\View\Element\Template" name="sticky.top.search" as="stickySearch" template="Magento_Search::form.mini.phtml"/>
+          </block>
+
+          <block class="Magento\Cms\Block\Block" name="coccinelle.header.social.links">
+            <arguments>
+            <argument name="block_id" xsi:type="string">coccinelle_header_social_links</argument>
+            </arguments>
+          </block>
+          <block class="Magento\Cms\Block\Block" name="coccinelle.header.info">
+            <arguments>
+              <argument name="block_id" xsi:type="string">coccinelle_header_custom_info</argument>
+            </arguments>
+          </block>
+        </block>
+      </referenceContainer>
+        <!-- <referenceContainer name="header.panel">
+            <block class="Magento\Framework\View\Element\Html\Links" name="header.links">
+                <arguments>
+                    <argument name="css_class" xsi:type="string">header links</argument>
+                </arguments>
+            </block>
+        </referenceContainer> -->
+        
+        <referenceContainer name="page.top">
+          <referenceBlock name="navigation.sections" remove="true" />
+        </referenceContainer>
+        <referenceBlock name="head.additional">
+            <block class="Magento\Framework\View\Element\Template" as="subheader" template="Magento_Theme::html/subheader.phtml" />
+        </referenceBlock>
+
+        <block name="top.links.meigee" class="Meigee\Coccinelle\Block\Template" template="Meigee_Coccinelle::html/header/toplinks.phtml">
+          <block class="Magento\Framework\View\Element\Template" name="catalog.compare.link" before="-"
+               template="Magento_Catalog::product/compare/link.phtml">
+            <arguments>
+              <argument name="jsLayout" xsi:type="array">
+                <item name="components" xsi:type="array">
+                  <item name="compareProducts" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Catalog/js/view/compare-products</item>
+                  </item>
+                </item>
+              </argument>
+            </arguments>
+          </block>
+          <block class="Magento\Customer\Block\Account\Link" name="my-account-link">
+            <arguments>
+              <argument name="label" xsi:type="string" translate="true">My Account</argument>
+              <argument name="sortOrder" xsi:type="number">110</argument>
+            </arguments>
+          </block>
+          <block class="Magento\Wishlist\Block\Link" name="wish-list-link" after="my-account-link">
+            <arguments>
+              <argument name="sortOrder" xsi:type="number">60</argument>
+            </arguments>
+          </block>
+        </block>
+
+        <referenceContainer name="footer-container">
+            <block class="Meigee\Coccinelle\Block\Template" name="meigee_footer" template="Magento_Theme::html/footer.phtml">
+              <container name="footer" as="footer" label="Page Footer" htmlTag="div" htmlClass="footer default">
+                <container name="footer.inner" label="Footer Inner" htmlTag="div" htmlClass="footer-bottom">
+                  <container name="footer.inner.container" label="Footer Inner Container" htmlTag="div" htmlClass="container clearfix">
+                    <block class="Magento\Theme\Block\Html\Footer" name="copyright" template="Magento_Theme::html/copyright.phtml"/>
+                    <referenceBlock name="footer_links" remove="true" />
+                    <referenceBlock name="report.bugs" remove="true" />
+                    <block class="Magento\Store\Block\Switcher" name="store_switcher" as="store_switcher" template="Magento_Store::switch/stores.phtml" after="copyright"/>
+                  </container>
+                </container>
+                <referenceBlock name="form.subscribe" remove="true" />
+              </container>
+            </block>
+        </referenceContainer>
+        <referenceBlock name="report.bugs" remove="true"/>
+        
+      <!-- #### Remove default header #### -->
+		<referenceContainer name="header.panel.wrapper" remove="true" />
+		<referenceContainer name="header-wrapper" remove="true" />
+
+		<move element="top.links.meigee" destination="meigee_header"/>
+		<move element="logo" destination="meigee_header"/>
+		<move element="minicart" destination="meigee_header" />
+		<move element="catalog.topnav" destination="meigee_header" />
+		<move element="top.search" destination="meigee_header" />
+		<move element="register-link" destination="top.links.meigee"/>
+		<move element="authorization-link" destination="top.links.meigee"/>
+		<move element="authorization-link-mobile" destination="meigee_header"/>
+		<move element="copyright" destination="footer.inner.container" before="store_switcher"/>
+
+		<referenceContainer name="div.sidebar.additional">
+		  <block class="Magento\Framework\View\Element\Template" as="facebook_sidebar" template="Meigee_Coccinelle::facebook_sidebar.phtml" ifconfig="coccinelle_general/coccinelle_facebook_block/status" />
+		</referenceContainer>
+		
+		<referenceContainer name="before.body.end">
+		  <block class="Magento\Framework\View\Element\Template" as="modal" template="Meigee_Coccinelle::modal.phtml" />
+		  <block class="Magento\Framework\View\Element\Template" as="popup_block" template="Meigee_Coccinelle::popup_block.phtml" ifconfig="coccinelle_general/coccinelle_popup_content/status" />
+		</referenceContainer>
+		
+		<referenceBlock name="reviews.tab" remove="true" />
+        <referenceBlock name="product.review.form" remove="true" />
+        <referenceBlock name="product.info.review" remove="true" />
+    </body>
+</page>
