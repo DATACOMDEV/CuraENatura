@@ -1,0 +1,117 @@
+<?php
+$helper = $this->helper('Ea\ItalianInvoice\Helper\Data');
+$enableModule = (int)$helper->getConfig('ea_setting/general/enable');
+$isFiscalCodeRequired = (int)$helper->getConfig('ea_setting/general/fiscal_code_required');
+$fiscalCompanyDefautlValue = (int)$helper->getConfig('ea_setting/general/fiscal_company_value');
+$shopVersion = $helper->getConfig('ea_setting/general/shop_version');
+$fiscalCodeBusiness = $helper->getConfig('ea_setting/general/fiscal_code_business');
+
+if ($enableModule == 1) {
+    ?>
+
+    <fieldset class="fieldset" data-bind="scope: 'customer-edit-address'">
+        <?php if ($shopVersion == 'default') : ?>
+        <div class="field fiscal_company required">
+            <label class="label" for="fiscal_company"><span><?php /* @escapeNotVerified */
+                    echo __('Are you a Company?') ?></span></label>
+            <div class="control">
+                <select class="select" name="fiscal_company" id="fiscal_company" <?php if ($isFiscalCodeRequired == 1) {echo 'data-fiscal-code-required="true"';} ?>>
+                    <?php if ($block->getFiscalCompanyValue() == 2 OR $fiscalCompanyDefautlValue == 1) :?>
+                    <option value=""></option>
+                    <option value="1" >Yes</option>
+                    <option value="2" selected="selected">No</option>
+                    <?php else :?>
+
+                    <option value=""></option>
+                    <option value="1" selected="selected" >Yes</option>
+                    <option value="2" >No</option>
+                    <?php endif; ?>
+                </select>
+            </div>
+        </div>
+        <?php elseif ($shopVersion == 'b2b') : ?>
+            <div class="field fiscal_company required" style="visibility: hidden; position: absolute;">
+                <label class="label" for="fiscal_company"><span><?php /* @escapeNotVerified */
+                        echo __('Are you a Company?') ?></span></label>
+                <div class="control">
+                    <select class="select" name="fiscal_company" id="fiscal_company" <?php if ($isFiscalCodeRequired == 1) {echo 'data-fiscal-code-required="true"';} ?>>
+                            <option value=""></option>
+                            <option value="1" selected="selected" >Yes</option>
+                            <option value="2" >No</option>
+                    </select>
+                </div>
+            </div>
+        <?php elseif ($shopVersion == 'b2c') : ?>
+            <div class="field fiscal_company required" style="visibility: hidden; position: absolute;">
+                <label class="label" for="fiscal_company"><span><?php /* @escapeNotVerified */
+                        echo __('Are you a Company?') ?></span></label>
+                <div class="control">
+                    <select class="select" name="fiscal_company" id="fiscal_company" <?php if ($isFiscalCodeRequired == 1) {echo 'data-fiscal-code-required="true"';} ?>>
+                        <option value=""></option>
+                        <option value="1">Yes</option>
+                        <option value="2"  selected="selected" >No</option>
+                    </select>
+                </div>
+            </div>
+        <?php endif; ?>
+        <?php if ($shopVersion != 'b2b') : ?>
+        <div class="field fiscal_code <?php if ($isFiscalCodeRequired == 1) {echo 'required';} ?> ">
+            <label class="label" for="fiscal_code"><span><?php /* @escapeNotVerified */
+                    echo __('Fiscal Code') ?></span></label>
+            <div class="control">
+                <input class="input-text <?php if ($fiscalCodeBusiness == 1) {echo 'fiscal-code-business';} ?> <?php if ($isFiscalCodeRequired == 1) {echo 'required-entry';} ?>"<?php if ($isFiscalCodeRequired == 1) {echo 'data-validate="{\'validate-fiscal_code-edit-address\':true}"';} ?>
+                       id="fiscal_code"
+                       name="fiscal_code"
+                       placeholder="<?php /* @escapeNotVerified */
+                       echo __('Fiscal Code') ?>" title="<?php /* @escapeNotVerified */
+                echo __('Fiscal Code') ?>"
+                       type="text"
+                       value="<?php echo $block->getFiscalCodeValue() ?>">
+            </div>
+        </div>
+        <?php endif; ?>
+        <?php if ($shopVersion != 'b2c') : ?>
+        <div class="field fiscal_sdi required">
+            <label class="label" for="fiscal_sdi"><span><?php /* @escapeNotVerified */
+                    echo __('Codice SDI/Pec') ?></span></label>
+            <div class="control">
+                <input type="text" name="fiscal_sdi" value="<?php echo $block->getCodiceSdiValue() ?>"
+                       title="<?php /* @escapeNotVerified */
+                       echo __('Codice SDI/Pec') ?>" id="fiscal_sdi" class="input-text required-entry"
+                       placeholder="<?php /* @escapeNotVerified */
+                       echo __('Codice SDI/Pec') ?>">
+            </div>
+        </div>
+        <?php endif; ?>
+    </fieldset>
+    <?php
+    $taxvatShow = $block->getHelper()->getConfig('customer/address/taxvat_show');
+    $companyShow = $block->getHelper()->getConfig('customer/address/company_show');
+    ?>
+
+    <script type="text/x-magento-init">
+    {
+        "*": {
+                "Magento_Ui/js/core/app": {
+                    "components": {
+                        "customer-edit-address": {
+                            "component": "Ea_ItalianInvoice/js/customer-edit-address"
+                        }
+                    }
+                }
+        }
+    }
+
+    </script>
+    <script type="text/x-magento-init">
+   {
+       "*": {
+           "editAddressValidation": {}
+       }
+   }
+
+    </script>
+
+    <?php
+}
+        ?>
