@@ -10,7 +10,7 @@
 		<referenceBlock name="head.additional">
 			<block class="Magento\Catalog\Block\Product\View" name="datacom.curaenatura.product.utilities" template="Datacom_CuraNatura::product/utilities.phtml" after="-"/>
 		</referenceBlock>
-		<container name="body.additional.utilities" htmlTag="div">
+		<container name="body.additional.utilities" htmlTag="div" htmlClass="product custom info">
 			<block class="Magento\Framework\View\Element\Template" name="datacom.curaenatura.product.body.utilities" before="-" template="Datacom_CuraNatura::product/body_utilities.phtml"/>
 		</container>
 		<move element="body.additional.utilities" destination="content" after="product.info.details" />
