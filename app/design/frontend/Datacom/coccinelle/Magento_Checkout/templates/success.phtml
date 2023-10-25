@@ -1,0 +1,235 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php /** @var $block \Magento\Checkout\Block\Onepage\Success */ ?>
+<!-- Tracciamento Trovaprezzi -->
+<?php
+	/*TP implementation*/
+	$objectManager =  \Magento\Framework\App\ObjectManager::getInstance();
+	$ordObj = $objectManager->create('Magento\Sales\Model\Order')->loadByIncrementId($block->getOrderId());
+	$products = $ordObj->getAllItems();
+	$TPtpi['chiaveMerchant'] = "bGNaM014SDZrYis4Vm54dGl3N0tXdjNHamtGMDQyeXo1czVWK1piWTBxMD01";
+	$TPtpi['email']=$ordObj['customer_email'];
+	$TPtpi['orderid'] = $block->getOrderId();
+	$TPtpi['amount'] = number_format ( $ordObj['grand_total'] , 2, '.','');
+	//Printing Script
+	//echo "<script type=\"text/javascript\" src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js\"></script>";
+	//echo "<script type=\"text/javascript\" src=\"https://tracking.trovaprezzi.it/javascripts/tracking.min.js\"></script>";
+	echo "<script type=\"text/javascript\">";
+	echo "window._tt = window._tt || [];";
+	echo "window._tt.push({ event: \"setAccount\", id: '". $TPtpi['chiaveMerchant'] ."' });";
+	echo "window._tt.push({ event: \"setOrderId\", order_id: '" . $TPtpi['orderid'] . "' });";
+	echo "window._tt.push({ event: \"setEmail\", email: '" . $TPtpi['email'] . "' });";
+	foreach($products as $prod){
+		$singleProd = $prod->getData();
+		$prodName = str_replace("'", "", $singleProd['name']);
+		echo "window._tt.push({ event: \"addItem\", sku: '" . $singleProd['item_id'] . "', product_name: '" . $prodName . "' });";
+	}
+	echo "window._tt.push({ event: \"setAmount\", amount: '" . $TPtpi['amount'] . "' });";
+	echo "window._tt.push({ event: \"orderSubmit\"});";
+	echo "</script>";
+	/*TP implementation END*/
+?>
+<script>
+	require(
+		[
+			'jquery'
+		],
+		function($) {
+			$.getScript('https://tracking.trovaprezzi.it/javascripts/tracking.min.js');
+		}
+	);
+</script>
+<!-- Fine tracciamento Trovaprezzi -->
+<div class="checkout-success">
+    <?php if ($block->getOrderId()):?>
+        <?php if ($block->getCanViewOrder()) :?>
+            <p><?= __('Your order number is: %1.', sprintf('<a href="%s" class="order-number"><strong>%s</strong></a>', $block->escapeHtml($block->getViewOrderUrl()), $block->escapeHtml($block->getOrderId()))) ?></p>
+        <?php  else :?>
+            <p><?= __('Your order # is: <span>%1</span>.', $block->escapeHtml($block->getOrderId())) ?></p>
+        <?php endif;?>
+            <p><?= /* @escapeNotVerified */ __('We\'ll email you an order confirmation with details and tracking info.') ?></p>
+    <?php endif;?>
+
+    <?= $block->getAdditionalInfoHtml() ?>
+
+    <div class="actions-toolbar">
+        <div class="primary">
+            <a class="action primary continue" href="<?= /* @escapeNotVerified */ $block->getContinueUrl() ?>"><span><?= /* @escapeNotVerified */ __('Continue Shopping') ?></span></a>
+        </div>
+    </div>
+</div>
+
+<!-- Tracciamento kelkoo -->
+<?php
+$_order = $this->helper('Datacom\CuraNatura\Helper\Order')->getOrderByIncrementId($block->getOrderId());
+$_items = $_order->getAllItems();
+?>
+<script type="text/javascript">
+var _kkstrack = {
+	merchantInfo : [{ country:'IT', merchantId:'100455064' }],
+	orderValue: '<?php echo $_order->getGrandTotal(); ?>',
+	orderId: '<?php echo $block->getOrderId() ?>',
+	basket: [
+		<?php foreach ($_items as $_item) { ?>
+		{
+			productname: '<?php echo $_item->getName() ?>',
+			productid: '<?php echo $_item->getSku() ?>',
+			quantity: '<?php echo $_item->getQtyOrdered() ?>',
+			price: '<?php echo $_item->getPriceInclTax() ?>'
+		},
+		<?php } ?>
+	]
+};
+(function() {
+	var s = document.createElement('script');
+	s.type = 'text/javascript';
+	s.async = true;
+	s.src = 'https://s.kk-resources.com/ks.js';
+	var x = document.getElementsByTagName('script')[0];
+	x.parentNode.insertBefore(s, x);
+})();
+</script>
+<!-- Fine tracciamento kelkoo -->
+
+<!-- Tracciamento Datatrics -->
+<script type="text/javascript">
+	<?php $_cartSubtotal = 0.00; ?>
+	<?php foreach ($products as $_curCartItem): ?>
+		<?php $_cartSubtotal += $_curCartItem->getRowTotalInclTax(); ?>
+		_paq.push(
+			[
+				'addEcommerceItem',
+				"<?php echo $_curCartItem->getSku(); ?>",
+				"<?php echo $_curCartItem->getName(); ?>",
+				false,//"CATEGORYNAME", // (optional) Product category. You can also specify an array of up to 5 categories eg. ["CATEGORYNAME", "CATEGORYNAME2", "CATEGORYNAME3"]
+				<?php echo $_curCartItem->getRowTotalInclTax() / $_curCartItem->getQtyOrdered(); ?>,
+				<?php echo $_curCartItem->getQtyOrdered(); ?>
+			]
+		);
+	<?php endforeach; ?>
+
+	// Specifiy the order details
+	_paq.push(['trackEcommerceOrder',
+		"<?php echo $block->getOrderId() ?>", // (required) Unique Order ID
+		<?php echo $_order->getGrandTotal(); ?>/*, // (required) Order Revenue grand total (includes tax, shipping, and subtracted discount)
+		5.5, // (optional) Order sub total (excludes shipping)
+		5.5, // (optional) Tax amount
+		5.5, // (optional) Shipping amount
+		false*/ // (optional) Discount offered (set to false for unspecified parameter)
+	]);
+
+	_paq.push(['trackPageView']);
+
+</script>
+<!-- Fine tracciamento Datatrics -->
+<!-- Tracciamento MyWorld.com -->
+<script type="text/javascript">
+	// Your organization ID; provided by Cashback World.
+	var organization=2164261;
+	//
+	// Event ID; provided by Cashback World.
+	var event=376271;
+	//
+	// Value of the sale; sale specific value has to be assigned dynamically out of the shop database.
+	// The orderValue is the basis for the commission paid to Cashback World.
+	var orderValue = <?php echo $_order->getGrandTotal(); ?>;
+	//
+	// Currency of the sale. For example “USD” for US-Dollar, or “EUR” for Euro.
+	var currency = "EUR";
+	//
+	// A unique identifier for the transaction. You should assign your internal shop order number
+	// dynamically out of your shop database. For a sale, this is typically the order number which is also
+	// shown to a customer in the order confirmation.
+	var orderNumber = "<?php echo $block->getOrderId(); ?>";
+	//
+	// Event type:
+	// true = Sale
+	// false = Lead
+	var isSale = true;
+	//
+	// Encrypted connection on this page:
+	// true = Yes (https)
+	// false = No (http)
+	var isSecure = true;
+	//
+	// OPTIONAL: You may transmit a list of items ordered in the reportInfo parameter. See chapter
+	// reportInfo (3.4.7.) at the “Tracking Implementation” Manual for details.
+	var reportInfo = ""; /*reportInfo = "f1=" + Product1Name + "&f2=" + Product1ID + "&f3=" +
+	NumberOfProduct1 + "&f4=" + Product1Price + "|f1=" + Product2Name + "&f2=" + Product2ID + "&f3=" +
+	NumberOfProduct2 + "&f4=" + Product2Price;*/
+	reportInfo = escape(reportInfo);
+	//
+	function getCookie(name)
+	{
+		var dc = document.cookie;
+		var prefix = name + "=";
+		var begin = dc.indexOf("; " + prefix);
+		if (begin == -1)
+		{
+			begin = dc.indexOf(prefix);
+			if (begin != 0) return null;
+		}
+		else
+		{
+			begin += 2;
+		}
+		var end = document.cookie.indexOf(";", begin);
+		if (end == -1)
+		{
+			end = dc.length;
+		}
+		return unescape(dc.substring(begin + prefix.length, end));
+	}
+	var tduid = getCookie("TRADEDOUBLER");
+	/***** IMPORTANT: *****/
+	/***** In most cases, you should not edit anything below this line. *****/
+	if (isSale)
+	{
+		var domain = "tbs.tradedoubler.com";
+		var checkNumberName = "orderNumber";
+	}
+	else
+	{
+		var domain = "tbl.tradedoubler.com";
+		var checkNumberName = "leadNumber";
+		var orderValue = "1";
+	}
+	//
+	//Create the checksum. See chapter checksum (3.4.1.) at the “Tracking Implementation” Manual for
+	//details.
+	var checksum = "xxx";
+	//
+	if (isSecure)
+		var scheme = "https";
+	else
+		var scheme = "http";
+	//
+	/*var trackBackUrl = scheme + "://" + domain + "/report" + "?organization=" + organization + "&event="
+	+ event + "&" + checkNumberName + "=" + orderNumber + "&checksum=" + checksum + "&tduid=" + tduid +
+	"&type=iframe&reportInfo=" + reportInfo;*/
+	var trackBackUrl = scheme + "://" + domain + "/report" + "?organization=" + organization + "&event="
+	+ event + "&" + checkNumberName + "=" + orderNumber + "&tduid=" + tduid +
+	"&type=iframe&reportInfo=" + reportInfo;
+	if (isSale)
+	{
+		trackBackUrl = trackBackUrl + "&orderValue=" + orderValue + "&currency=" + currency;
+	}
+	//
+	function prepareFrame(tburl){
+		ifrm = document.createElement("IFRAME");
+		ifrm.setAttribute("src", tburl);
+		ifrm.style.width = 1+"px";
+		ifrm.style.height = 1+"px";
+		ifrm.style.border = "none";
+		document.body.appendChild(ifrm);
+	}
+	prepareFrame(trackBackUrl);
+</script>
+<!-- Fine tracciamento MyWorld.com -->

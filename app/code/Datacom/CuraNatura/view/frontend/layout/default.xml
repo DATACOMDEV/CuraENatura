@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<head>
+		<css src="Datacom_CuraNatura::css/tables.min.css"/>
+		<css src="Datacom_CuraNatura::css/style.min.css"/>
+	</head>
+    <body>
+		<referenceBlock name="head.additional">
+			<block class="Magento\Framework\View\Element\Template" name="datacom.tosoni.utilities" template="Datacom_CuraNatura::utilities.phtml" after="-"/>
+		</referenceBlock>
+		<referenceContainer name="after.body.start">
+			<block class="Magento\Framework\View\Element\Template" name="datacom.body.utilities" template="Datacom_CuraNatura::body_utilities.phtml" before="-"/>
+		</referenceContainer>
+	</body>
+</page>

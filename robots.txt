@@ -1,0 +1,17 @@
+User-agent: msnbot 
+Crawl-delay: 10
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: AhrefsBot 
+Disallow: /
+
+User-agent: Yandex
+Crawl-delay: 10
+
+User-agent: Bingbot
+Disallow: /
+
+User-agent: SemrushBot 
+Crawl-delay: 10
