@@ -61,9 +61,9 @@
         <referenceContainer name="page.top">
           <referenceBlock name="navigation.sections" remove="true" />
         </referenceContainer>
-        <referenceBlock name="head.additional">
+        <!-- <referenceBlock name="head.additional">
             <block class="Magento\Framework\View\Element\Template" as="subheader" template="Magento_Theme::html/subheader.phtml" />
-        </referenceBlock>
+        </referenceBlock> -->
 
         <block name="top.links.meigee" class="Meigee\Coccinelle\Block\Template" template="Meigee_Coccinelle::html/header/toplinks.phtml">
           <block class="Magento\Framework\View\Element\Template" name="catalog.compare.link" before="-"
@@ -122,14 +122,14 @@
 		<move element="authorization-link-mobile" destination="meigee_header"/>
 		<move element="copyright" destination="footer.inner.container" before="store_switcher"/>
 
-		<referenceContainer name="div.sidebar.additional">
+		<!-- <referenceContainer name="div.sidebar.additional">
 		  <block class="Magento\Framework\View\Element\Template" as="facebook_sidebar" template="Meigee_Coccinelle::facebook_sidebar.phtml" ifconfig="coccinelle_general/coccinelle_facebook_block/status" />
-		</referenceContainer>
+		</referenceContainer> -->
 		
-		<referenceContainer name="before.body.end">
+		<!--<referenceContainer name="before.body.end">
 		  <block class="Magento\Framework\View\Element\Template" as="modal" template="Meigee_Coccinelle::modal.phtml" />
 		  <block class="Magento\Framework\View\Element\Template" as="popup_block" template="Meigee_Coccinelle::popup_block.phtml" ifconfig="coccinelle_general/coccinelle_popup_content/status" />
-		</referenceContainer>
+		</referenceContainer> -->
 		
 		<referenceBlock name="reviews.tab" remove="true" />
         <referenceBlock name="product.review.form" remove="true" />

@@ -4,6 +4,7 @@
 			<argument name="commands" xsi:type="array">
 				<item name="kelkoofeed" xsi:type="object">Datacom\CuraNatura\Console\Command\KelkooFeedCommand</item>
 				<item name="syncnewsletteraccount" xsi:type="object">Datacom\CuraNatura\Console\Command\SyncNewsletterAccount</item>
+				<item name="aligninventory" xsi:type="object">Datacom\CuraNatura\Console\Command\AlignInventoryCommand</item>
 			</argument>
 		</arguments>
 	</type>
