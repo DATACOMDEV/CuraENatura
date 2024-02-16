@@ -2,21 +2,24 @@
 
 namespace Datacom\CuraNatura\Controller\Catalog;
 
-class PriceUpdate extends \Magento\Framework\App\Action\Action
+class ImagesUpdate extends \Magento\Framework\App\Action\Action
 {
     protected $_jsonHelper;
     protected $_productRepository;
+    protected $fileSystem;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Catalog\Model\ProductRepository $productRepository
+        \Magento\Catalog\Model\ProductRepository $productRepository,
+        \Magento\Framework\Filesystem $fileSystem
 	)
 	{
         parent::__construct($context);
 
         $this->_jsonHelper = $jsonHelper;
         $this->_productRepository = $productRepository;
+        $this->_fileSystem = $fileSystem;
 
         //$this->_productCollectionFactory = $productCollectionFactory;
 
@@ -37,6 +40,8 @@ class PriceUpdate extends \Magento\Framework\App\Action\Action
 
         $reqData = $reqData['products'];
 
+        $tempImageFolder = sprintf('%sdatacom/images', BP);
+
         foreach ($reqData as $sku => $data) {
             try {
 				$targetProduct = $this->_productRepository->get($sku, false, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
@@ -46,34 +51,44 @@ class PriceUpdate extends \Magento\Framework\App\Action\Action
 				continue;
 			}
 
-            $mustSave = false;
+            foreach ($p->getMediaGalleryImages() as $img) {
+                $imgFile = sprintf(
+                    '%scatalog/product%s', 
+                    $this->_fileSystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA)->getAbsolutePath(),
+                    $img->getFile()
+                );
 
-            $newPrice = $data['price'];
+                if (!file_exists($imgFile)) continue;
 
-            if ($targetProduct->getPrice() != $newPrice) {
-                $targetProduct->setPrice($newPrice);
-                $mustSave = true;
+                unlink($imgFile);
             }
 
-            $newSpecialPrice = $data['special_price'];
-            if ($newSpecialPrice >= $newPrice) {
-                $newSpecialPrice = null;
-            }
+            $p->setMediaGalleryEntries([]);
 
-            if ($targetProduct->getSpecialPrice() != $newSpecialPrice) {
-                if (empty($newSpecialPrice)) {
-                    $targetProduct->setSpecialPrice(null);
-                    $targetProduct->setSpecialFromDate(null);
-                    $targetProduct->setSpecialToDate(null);
-                } else {
-                    $targetProduct->setSpecialPrice($newSpecialPrice);
-                    $targetProduct->setSpecialFromDate(strtotime('yesterday'));
-                    $targetProduct->setSpecialToDate(strtotime('+3 years'));
+            //$this->_productRepository->save($targetProduct);
+
+            foreach ($data['images'] as $img) {
+                $imageTypeData = [];
+
+                if ($img['image']) {
+                    $imageTypeData[] = 'image';
                 }
-                $mustSave = true;
-            }
 
-            if (!$mustSave) continue;
+                if ($img['small_image']) {
+                    $imageTypeData[] = 'small_image';
+                }
+
+                if ($img['thumbnail']) {
+                    $imageTypeData[] = 'thumbnail';
+                }
+
+                $decodedImage = base64_decode($img['base64_encoded']);
+                $targetFile = sprintf('%s/%s', $tempImageFolder, $img['filename']);
+                file_put_contents($targetFile, $decodedImage);
+                $p->addImageToMediaGallery($targetFile, $imageTypeData, true, false);
+                if (!file_exists($targetFile)) continue;
+                unlink($targetFile);
+            }
 
             $this->_productRepository->save($targetProduct);
         }

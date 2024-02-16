@@ -7,12 +7,16 @@ class ProductList extends \Magento\Framework\App\Action\Action
     protected $_jsonHelper;
     protected $_resourceConnection;
     protected $_productRepository;
+    protected $_taxCalculation;
+    protected $_storeManager;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Framework\App\ResourceConnection $resourceConnection,
-        \Magento\Catalog\Model\ProductRepository $productRepository
+        \Magento\Catalog\Model\ProductRepository $productRepository,
+        \Magento\Tax\Model\Calculation $taxCalculation,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
 	)
 	{
         parent::__construct($context);
@@ -20,6 +24,8 @@ class ProductList extends \Magento\Framework\App\Action\Action
         $this->_jsonHelper = $jsonHelper;
         $this->_resourceConnection = $resourceConnection;
         $this->_productRepository = $productRepository;
+        $this->_taxCalculation = $taxCalculation;
+        $this->_storeManager = $storeManager;
 
         //$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 	}
@@ -94,6 +100,8 @@ class ProductList extends \Magento\Framework\App\Action\Action
         $query = sprintf('SELECT sku FROM %s ORDER BY entity_id ASC LIMIT %d, %d', $this->_resourceConnection->getTableName('catalog_product_entity'), $p1, $p2);
         $skus = $conn->fetchCol($query);
 
+        $taxRequest = $this->_taxCalculation->getRateRequest(null, null, null, $this->_storeManager->getStore(\Magento\Store\Model\Store::DEFAULT_STORE_ID));
+
         foreach ($skus as $s) {
             $p = $this->_productRepository->get($s, false, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
             
@@ -113,7 +121,17 @@ class ProductList extends \Magento\Framework\App\Action\Action
                 'price' => $this->_getFormattedPrice($p->getPrice()),
                 'special_price' => $this->_getFormattedPrice($specialPrice),
                 'status' => $p->getStatus() == 1 ? true : false,
-                'manufacturer' => $p->getAttributeText('manufacturer')
+                'manufacturer' => $p->getAttributeText('manufacturer'),
+                'tax_rate' => $this->_taxCalculation->getRate($taxRequest->setProductClassId($p->getTaxClassId())),
+                'composition' => $p->getData('composizione'),
+                'contraindications' => $p->getData('controindicazioni'),
+                'use_method' => $p->getData('modo_uso'),
+                'description' => $p->getData('description'),
+                'short_description' => $p->getData('short_description'),
+                'url_key' => $p->getData('url_key'),
+                'meta_title' => $p->getData('meta_title'),
+                'meta_description' => $p->getData('meta_description'),
+                'meta_keyword' => $p->getData('meta_keyword'),
             ];
         }
 
