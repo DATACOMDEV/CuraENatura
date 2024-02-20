@@ -132,6 +132,7 @@ class ProductList extends \Magento\Framework\App\Action\Action
                 'meta_title' => $p->getData('meta_title'),
                 'meta_description' => $p->getData('meta_description'),
                 'meta_keyword' => $p->getData('meta_keyword'),
+                'cat_ids' => $p->getCategoryIds()
             ];
         }
 

@@ -38,7 +38,7 @@ class SyncNewsletterAccount extends \Symfony\Component\Console\Command\Command
 
         $conn = $this->_conn->getConnection();
 
-        $rows = $conn->fetchAll('SELECT * FROM mg_newsletter_subscriber WHERE subscriber_status=1 AND subscriber_id NOT IN (SELECT subscriber_id FROM dtm_newsletter_sync)');
+        $rows = $conn->fetchAll('SELECT * FROM mg_newsletter_subscriber WHERE subscriber_status=1 AND subscriber_id NOT IN (SELECT subscriber_id FROM mg_dtm_newsletter_sync)');
 
         foreach ($rows as $r) {
             try {
@@ -46,7 +46,7 @@ class SyncNewsletterAccount extends \Symfony\Component\Console\Command\Command
 
                 echo "E-MAIL: ".$r['subscriber_email']."\r\n";
                 
-                $query = 'INSERT INTO dtm_newsletter_sync (subscriber_id) VALUES ('.$r['subscriber_id'].')';
+                $query = 'INSERT INTO mg_dtm_newsletter_sync (subscriber_id) VALUES ('.$r['subscriber_id'].')';
 
                 $conn->query($query);
                 //break;

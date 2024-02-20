@@ -40,7 +40,7 @@ class ImagesUpdate extends \Magento\Framework\App\Action\Action
 
         $reqData = $reqData['products'];
 
-        $tempImageFolder = sprintf('%sdatacom/images', BP);
+        $tempImageFolder = sprintf('%s/datacom/images', BP);
 
         foreach ($reqData as $sku => $data) {
             try {
@@ -51,7 +51,7 @@ class ImagesUpdate extends \Magento\Framework\App\Action\Action
 				continue;
 			}
 
-            foreach ($p->getMediaGalleryImages() as $img) {
+            foreach ($targetProduct->getMediaGalleryImages() as $img) {
                 $imgFile = sprintf(
                     '%scatalog/product%s', 
                     $this->_fileSystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA)->getAbsolutePath(),
@@ -63,11 +63,11 @@ class ImagesUpdate extends \Magento\Framework\App\Action\Action
                 unlink($imgFile);
             }
 
-            $p->setMediaGalleryEntries([]);
+            $targetProduct->setMediaGalleryEntries([]);
 
             //$this->_productRepository->save($targetProduct);
 
-            foreach ($data['images'] as $img) {
+            foreach ($data as $img) {
                 $imageTypeData = [];
 
                 if ($img['image']) {
@@ -85,12 +85,14 @@ class ImagesUpdate extends \Magento\Framework\App\Action\Action
                 $decodedImage = base64_decode($img['base64_encoded']);
                 $targetFile = sprintf('%s/%s', $tempImageFolder, $img['filename']);
                 file_put_contents($targetFile, $decodedImage);
-                $p->addImageToMediaGallery($targetFile, $imageTypeData, true, false);
+                $relativeFile = sprintf('../../datacom/images/%s', $img['filename']);
+                $targetProduct->addImageToMediaGallery($relativeFile, $imageTypeData, true, false);
                 if (!file_exists($targetFile)) continue;
                 unlink($targetFile);
             }
 
-            $this->_productRepository->save($targetProduct);
+            //$this->_productRepository->save($targetProduct);
+            $targetProduct->save();
         }
 
         /*$response = $this->_jsonHelper->jsonEncode($response);

@@ -93,7 +93,8 @@ class ProductImages extends \Magento\Framework\App\Action\Action
                 'thumbnail' =>  $img->getFile() == $p->getData('thumbnail') ? 1 : 0,
                 'image' => $img->getFile() == $p->getData('image') ? 1 : 0,
                 'small_image' =>  $img->getFile() == $p->getData('small_image') ? 1 : 0,
-                'base64_encoded' => $base64str
+                'base64_encoded' => $base64str,
+                'filename' => basename($imgFile)
                 //'base64_encoded' => sprintf($this->_fileSystem->getDirectoryRead('%scatalog/product%s', \Magento\Framework\App\Filesystem\DirectoryList::MEDIA)->getAbsolutePath(), $img->getFile())
             ];
         }
