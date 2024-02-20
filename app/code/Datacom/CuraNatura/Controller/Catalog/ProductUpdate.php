@@ -71,6 +71,7 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
                 $targetProduct->setSku($sku);
                 $targetProduct->setUrlKey($data['url_key']);
                 $targetProduct->setAttributeSetId(4);
+                $targetProduct->setPrice(1);
 
                 $this->_productRepository->save($targetProduct);
                 $targetProduct = $this->_productRepository->get($sku, false, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
@@ -100,7 +101,7 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
                 $attributesToUpdate['name'] = $data['name'];
             }
 
-            if (array_key_exists('manufacturer', $data) && $targetProduct->getAttributeText('manufacturer') != $data['manufacturer']) {
+            if (array_key_exists('manufacturer', $data) && trim(strtolower($targetProduct->getAttributeText('manufacturer'))) != trim(strtolower($data['manufacturer']))) {
                 $optionId = $this->getOptionId('manufacturer', $data['manufacturer']);
                 if (!$optionId) {
                     $this->createAttributeValue('manufacturer', $data['manufacturer']);

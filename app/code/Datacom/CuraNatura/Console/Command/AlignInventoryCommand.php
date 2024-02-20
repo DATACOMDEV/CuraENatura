@@ -9,6 +9,7 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
 {
     const ATTRIBUTE_CODE_UNICO_INVENTARIO = 'dtm_inventario_unico';
     const ATTRIBUTE_CODE_UNICO_PREZZO = 'dtm_inventario_unico_prezzo';
+    const ATTRIBUTE_CODE_VECCHIO_PREZZO_SCONTATO = 'dtm_inventario_prz_precedente';
 
     protected $_conn;
     protected $_stockRegistryInterface;
@@ -43,7 +44,7 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
 	{
-        $this->_state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
+        /*$this->_state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
 
         $rows = file(dirname(__FILE__).'/Cartel1.csv');
         foreach ($rows as $r) {
@@ -61,7 +62,7 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
             $stockItem->save();
         }
 
-        return;
+        return;*/
 
         $now = new \DateTime();
         $output->writeln(sprintf('Avvio procedura allineamento inventario - %s', $now->format('Y-m-d H:i:s')));
@@ -98,7 +99,8 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
 
         $rows = $conn->fetchAll('SELECT entity_id FROM mg_catalog_product_entity ORDER BY entity_id ASC');
 
-        $unicoData = $this->getInventoryDataUnico();
+        $stockRules = $this->getStockRulesSettings();
+        $unicoData = $this->getInventoryDataUnico($stockRules['UnicoDiscount']);
         
         foreach ($rows as $r) {
             try {
@@ -120,6 +122,7 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         $newQty = $this->manageDataUnico($product, $unicoData, $attrData);
         if ($newQty > -1) {
             $this->updateProductQty($product->getId(), $newQty);
+            $this->updateProductPrice($product, $attrData[self::ATTRIBUTE_CODE_UNICO_PREZZO]);
             $returnDetails[] = 'UNICO';
         }
 
@@ -128,6 +131,17 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         $this->_productAction->updateAttributes([$product->getId()], $attrData, 0);
 
         return $returnDetails;
+    }
+
+    protected function updateProductPrice($product, $unicoPrice) {
+        if ($product->getSpecialPrice() >= $unicoPrice) return;
+
+        //$this->_productAction->updateAttributes([$product->getId()], [self::ATTRIBUTE_CODE_VECCHIO_PREZZO_SCONTATO => $product->getSpecialPrice()], 0);
+
+        $product->setData(self::ATTRIBUTE_CODE_VECCHIO_PREZZO_SCONTATO, $product->getSpecialPrice());
+        $product->setSpecialPrice($unicoPrice);
+
+        $this->_productRepositoryInterface->save($product);
     }
 
     protected function updateProductQty($productId, $newQty) {
@@ -168,7 +182,7 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         return $unicoData[$product->getSku()]['qty'];
     }
 
-    protected function getInventoryDataUnico() {
+    protected function getInventoryDataUnico($unicoDiscountPercentage) {
         $targetFile = BP.'/inventario/listino_unico.csv';
 
         $filwRows = file($targetFile, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
@@ -176,12 +190,20 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         $productsData = [];
         foreach ($filwRows as $fullRow) {
             $row = explode(';', $fullRow);
+            $priceCol = floatval($row[2]);
+            $taxRate = floatval(/*$row[3]*/0);
+            $priceCol *= ((100 + $taxRate) / 100);
+            $priceCol = round($priceCol * ((100 - $unicoDiscountPercentage) / 100), 2);
             $productsData[''.$row[0]] = [
                 'qty' => intval($row[1]),
-                'price' => floatval($row[2])
+                'price' => $priceCol
             ];
         }
 
         return $productsData;
+    }
+
+    private function getStockRulesSettings() {
+        return json_decode(file_get_contents(BP.'/inventario/StockRules.json'), true);
     }
 }

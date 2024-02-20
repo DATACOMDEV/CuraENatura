@@ -48,6 +48,10 @@ class PriceUpdate extends \Magento\Framework\App\Action\Action
 
             $mustSave = false;
 
+            if ($targetProduct->getData(\Datacom\CuraNatura\Console\Command\AlignInventoryCommand::ATTRIBUTE_CODE_UNICO_INVENTARIO) == 1) {
+                if (!empty($data['special_price']) && floatval($data['special_price']) < floatval($targetProduct->getData(\Datacom\CuraNatura\Console\Command\AlignInventoryCommand::ATTRIBUTE_CODE_UNICO_PREZZO))) continue;
+            }
+
             $newPrice = $data['price'];
 
             if ($targetProduct->getPrice() != $newPrice) {
