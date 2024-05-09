@@ -15,6 +15,8 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
     protected $_attributeOptionManagement;
     protected $_attributeRepository;
     protected $_tableFactory;
+    protected $_categoryRepository;
+    protected $_categoryLinkRepository;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -36,12 +38,14 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
         //$this->_productCollectionFactory = $productCollectionFactory;
 
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->_storeManager = $objectManager->create('Magento\Store\Model\StoreManagerInterface');
-        $this->_optionLabelFactory = $objectManager->create('Magento\Eav\Api\Data\AttributeOptionLabelInterfaceFactory');
-        $this->_optionFactory = $objectManager->create('Magento\Eav\Api\Data\AttributeOptionInterfaceFactory');
-        $this->_attributeOptionManagement = $objectManager->create('Magento\Eav\Api\AttributeOptionManagementInterface');
-        $this->_attributeRepository = $objectManager->create('Magento\Catalog\Api\ProductAttributeRepositoryInterface');
-        $this->_tableFactory = $objectManager->create('Magento\Eav\Model\Entity\Attribute\Source\TableFactory');
+        $this->_storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
+        $this->_optionLabelFactory = $objectManager->get('Magento\Eav\Api\Data\AttributeOptionLabelInterfaceFactory');
+        $this->_optionFactory = $objectManager->get('Magento\Eav\Api\Data\AttributeOptionInterfaceFactory');
+        $this->_attributeOptionManagement = $objectManager->get('Magento\Eav\Api\AttributeOptionManagementInterface');
+        $this->_attributeRepository = $objectManager->get('Magento\Catalog\Api\ProductAttributeRepositoryInterface');
+        $this->_tableFactory = $objectManager->get('Magento\Eav\Model\Entity\Attribute\Source\TableFactory');
+        $this->_categoryRepository = $objectManager->get('Magento\Catalog\Model\CategoryRepository');
+        $this->_categoryLinkRepository = $objectManager->get('Magento\Catalog\Model\CategoryLinkRepository');
 	}
 
 	public function execute()
@@ -61,8 +65,11 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
         $taxRequest = $this->_taxCalculation->getRateRequest(null, null, null, $this->_storeManager->getStore(\Magento\Store\Model\Store::DEFAULT_STORE_ID));
 
         foreach ($reqData as $sku => $data) {
+            $mustSaveCategories = false;
+            $newCatIds = [];
+            $isNewProduct = false;
             try {
-				$targetProduct = $this->_productRepository->get($sku, false, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
+				$targetProduct = $this->_productRepository->get($sku, true, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
 				if (empty($targetProduct) || !$targetProduct->getId()) throw new \Magento\Framework\Exception\NoSuchEntityException();
 			} catch (\Magento\Framework\Exception\NoSuchEntityException $th) {
 				$targetProduct = $this->_productFactory->create();
@@ -72,26 +79,27 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
                 $targetProduct->setUrlKey($data['url_key']);
                 $targetProduct->setAttributeSetId(4);
                 $targetProduct->setPrice(1);
+                $targetProduct->setData('trovaprezzi', 1);
 
                 $this->_productRepository->save($targetProduct);
                 $targetProduct = $this->_productRepository->get($sku, false, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
+                $isNewProduct = true;
 			}
 
             $attributesToUpdate = [];
 
             if (array_key_exists('tax_rate', $data)) {
                 $newTaxRate = doubleval($data['tax_rate']);
-
                 if ($this->_taxCalculation->getRate($taxRequest->setProductClassId($targetProduct->getTaxClassId())) != $newTaxRate) {
                     switch ($newTaxRate) {
                         case 4:
-                            $attributesToUpdate['tax_rate'] = 13;
+                            $attributesToUpdate['tax_class_id'] = 13;
                             break;
                         case 10:
-                            $attributesToUpdate['tax_rate'] = 12;
+                            $attributesToUpdate['tax_class_id'] = 12;
                             break;
                         default:    //22%
-                        $attributesToUpdate['tax_rate'] = 11;
+                            $attributesToUpdate['tax_class_id'] = 11;
                             break;
                     }
                 }
@@ -101,13 +109,18 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
                 $attributesToUpdate['name'] = $data['name'];
             }
 
-            if (array_key_exists('manufacturer', $data) && trim(strtolower($targetProduct->getAttributeText('manufacturer'))) != trim(strtolower($data['manufacturer']))) {
-                $optionId = $this->getOptionId('manufacturer', $data['manufacturer']);
-                if (!$optionId) {
-                    $this->createAttributeValue('manufacturer', $data['manufacturer']);
-                    $optionId = $this->getOptionId('manufacturer', $data['manufacturer'], true);
+            if (array_key_exists('manufacturer', $data)) {
+                $currentProductValue = trim(strtolower($targetProduct->getAttributeText('manufacturer')));
+                $newProductValue = trim(strtolower($data['manufacturer']));
+                $newProductValue = $this->getMappedManufacturerLabel($newProductValue);
+                if ($currentProductValue != $newProductValue) {
+                    $optionId = $this->getOptionId('manufacturer', $newProductValue);
+                    if (!$optionId) {
+                        $this->createAttributeValue('manufacturer', $newProductValue);
+                        $optionId = $this->getOptionId('manufacturer', $newProductValue, true);
+                    }
+                    $attributesToUpdate['manufacturer'] = $optionId;
                 }
-                $attributesToUpdate['manufacturer'] = $optionId;
             }
 
             if (array_key_exists('composition', $data) && $targetProduct->getData('composizione') != $data['composition']) {
@@ -142,11 +155,19 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
                 $attributesToUpdate['meta_keyword'] = $data['meta_keyword'];
             }
 
+            if (array_key_exists('magazzino', $data) && $data['magazzino'] == 'UNICO') {
+                $attributesToUpdate[\Datacom\CuraNatura\Console\Command\AlignInventoryCommand::ATTRIBUTE_CODE_UNICO_INVENTARIO] = 1;
+                if ($isNewProduct) {
+                    $targetProduct->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED);
+                }
+            }
+
             if (!empty($attributesToUpdate)) {
                 foreach ($attributesToUpdate as $code => $val) {
                     $targetProduct->setData($code, $val);
                 }
                 $this->_productRepository->save($targetProduct);
+                $targetProduct = $this->_productRepository->get($sku, true, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
                 //$this->_productAction->updateAttributes([$targetProduct->getId()], $attributesToUpdate, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
             }
 
@@ -157,12 +178,22 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
                 $mustSave = true;
             }
 
+            $catToRemoveIds = [];
             if (array_key_exists('cat_ids', $data)) {
-                $newCatIds = $data['cat_ids'];
+                foreach ($data['cat_ids'] as $catId) {
+                    if (!$this->isValidCategoryId($catId)) continue;
+                    $newCatIds[] = $catId;
+                }
+
                 $oldCatIds = $targetProduct->getCategoryIds();
 
                 $sortedNewCatIds = $newCatIds;
                 $sortedOldCatIds = $oldCatIds;
+
+                foreach ($oldCatIds as $catId) {
+                    if (in_array($catId, $newCatIds)) continue;
+                    $catToRemoveIds[] = $catId;
+                }
 
                 sort($sortedNewCatIds, SORT_NUMERIC);
                 sort($sortedOldCatIds, SORT_NUMERIC);
@@ -173,16 +204,27 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
                 if ($sortedNewCatIds != $sortedOldCatIds) {
                     $targetProduct->setCategoryIds($newCatIds);
                     $mustSave = true;
+                    //$mustSaveCategories = true;
                 }
             }
 
-            if (!$mustSave) continue;
-
-            try {
-                $this->_productRepository->save($targetProduct);
-            } catch (\Exception $ex) {
-                throw new \Exception(sprintf('Impossibile salvare il prodotto: %s', $ex->getMessage()));
+            if ($mustSave) {
+                try {
+                    $this->_productRepository->save($targetProduct);
+                    //$targetProduct->save();
+                } catch (\Exception $ex) {
+                    throw new \Exception(sprintf('Impossibile salvare il prodotto: %s', $ex->getMessage()));
+                }
             }
+
+            foreach ($catToRemoveIds as $catId) {
+                $this->_categoryLinkRepository->deleteByIds($catId, $targetProduct->getSku());
+            }
+            /*if ($mustSaveCategories) {
+                $this->_categoryLinkManagement->assignProductToCategories($targetProduct->getSku(), [192]);
+            }*/
+
+            //
 
             /*if (!$mustSave) continue;
 
@@ -231,7 +273,8 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
             $sourceModel->setAttribute($attribute);
 
             foreach ($sourceModel->getAllOptions() as $option) {
-                $this->attributeValues[ $attribute->getAttributeId() ][ $option['label'] ] = $option['value'];
+                $labelToUse = trim(strtolower($option['label']));
+                $this->attributeValues[ $attribute->getAttributeId() ][ $labelToUse ] = $option['value'];
             }
         }
 
@@ -242,5 +285,20 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
 
         // Return false if does not exist
         return false;
+    }
+
+    private function isValidCategoryId($catId) {
+        try {
+            $cat = $this->_categoryRepository->get($catId);
+            if (!$cat || !$cat->getId()) throw new \Exception();
+            return true;
+        } catch (\Exception $ex) {
+            return false;
+        }
+    }
+
+    private function getMappedManufacturerLabel($manufacturer) {
+        //if ($manufacturer == 'oti') return 'oti srl';
+        return $manufacturer;
     }
 }

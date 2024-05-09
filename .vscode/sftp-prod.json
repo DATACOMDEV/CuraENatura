@@ -1,0 +1,8 @@
+{
+    "protocol": "ftp",
+    "host": "86.107.32.16",
+    "port": 21,
+    "username": "zhcuraen",
+    "password": "JCe_5thA53)L",
+    "remotePath": "/public_html"
+}

@@ -10,6 +10,25 @@
  * @var $block \Magento\Checkout\Block\Cart\Totals
  */
 ?>
+<style type="text/css">
+    .cart-container .cart-summary .totals-wrapper {
+        padding-top: 0;
+    }
+    .checkout-right-bar {
+        padding-bottom: 30px;
+    }
+    .checkout-right-bar a:not(:hover) {
+        text-decoration: none;
+    }
+</style>
+<div class="checkout-right-bar">
+    <div>
+        <img style="max-width: 100px;" src="<?php echo $this->helper('Magento\Cms\Helper\Wysiwyg\Images')->getBaseUrl().'wysiwyg/logo-brt.jpg'; ?>" />
+    </div>
+    <p>RITIRA QUANDO E DOVE <span style="color: rgb(196 13 53);"><strong>VUOI CON FERMOPOINT</strong></span></p>
+    <p>Con <strong>BRT Fermopoint</strong> puoi ritirare i tuoi ordini dove preferisci, eliminando i problemi di consegna.</p>
+    <a href="/it/spedizioni-fermopoint.html" target="_blank" class="action continue btn btn-default" style="width: 100%; text-align: center;"><span>SCOPRI DI PIU'</span></a>
+</div>
 <div id="cart-totals" class="cart-totals" data-bind="scope:'block-totals'">
     <!-- ko template: getTemplate() --><!-- /ko -->
     <script type="text/x-magento-init">

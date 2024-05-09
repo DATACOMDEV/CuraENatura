@@ -88,6 +88,19 @@
     text-decoration: underline;
 }
 
+body._has-modal .page-wrapper {
+	z-index: 1;
+}
+
+#my-orders-table th,
+#my-orders-table td {
+    white-space: nowrap;
+}
+
+#product-attribute-specs-table tbody tr th {
+    white-space: nowrap;
+}
+
 @media (max-width: 374px) {
     #farmaci-auth-footer > img {
         width: 70%;
@@ -197,10 +210,31 @@
     .widget.block.block-static-block > .home-slider-wrapper {
         min-height: 250px;
     }
+
+    /*.col-xs-12.col-lg-2.custom-fix-bootstrap {
+        margin-left: 0 !important;
+    }*/
 }
 
 @media (min-width: 1200px) {
     .widget.block.block-static-block > .home-slider-wrapper {
         min-height: 530px;
+    }
+
+    .page-header .logo {
+        margin: 0;
+    }
+
+    .page-header .middle-block .container {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .header-wrapper .navbar-default .navbar-collapse.collapse li.level-top a.level-top {
+        padding: 10px 30px;
+    }
+
+    .page-header .block-search {
+        margin-top: 0;
     }
 }

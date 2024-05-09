@@ -48,10 +48,6 @@ class PriceUpdate extends \Magento\Framework\App\Action\Action
 
             $mustSave = false;
 
-            if ($targetProduct->getData(\Datacom\CuraNatura\Console\Command\AlignInventoryCommand::ATTRIBUTE_CODE_UNICO_INVENTARIO) == 1) {
-                if (!empty($data['special_price']) && floatval($data['special_price']) < floatval($targetProduct->getData(\Datacom\CuraNatura\Console\Command\AlignInventoryCommand::ATTRIBUTE_CODE_UNICO_PREZZO))) continue;
-            }
-
             $newPrice = $data['price'];
 
             if ($targetProduct->getPrice() != $newPrice) {
@@ -64,6 +60,25 @@ class PriceUpdate extends \Magento\Framework\App\Action\Action
                 $newSpecialPrice = null;
             }
 
+            if ($targetProduct->getData(\Datacom\CuraNatura\Console\Command\AlignInventoryCommand::ATTRIBUTE_CODE_UNICO_INVENTARIO) == 1) {
+                continue;
+                /*$oldSavedPrice = $targetProduct->getData(\Datacom\CuraNatura\Console\Command\AlignInventoryCommand::ATTRIBUTE_CODE_VECCHIO_PREZZO_SCONTATO);
+                $currentSpecialPrice = $targetProduct->getSpecialPrice();
+                //se il prodotto sta usando un prezzo unico
+                if ($oldSavedPrice == $currentSpecialPrice) {
+                    $newSpecialPriceToUse = is_null($newSpecialPrice) ? 99999 : $newSpecialPrice;
+                    if (is_null($currentSpecialPrice) || empty($currentSpecialPrice)) {
+                        $currentSpecialPrice = 99999;
+                    }
+                    if ($newSpecialPriceToUse < $currentSpecialPrice) {
+                        $product->setData(\Datacom\CuraNatura\Console\Command\AlignInventoryCommand::ATTRIBUTE_CODE_VECCHIO_PREZZO_SCONTATO, null);
+                        $mustSave = true;
+                    } else {
+                        $newSpecialPrice = $targetProduct->getSpecialPrice();
+                    }
+                }*/
+            }
+
             if ($targetProduct->getSpecialPrice() != $newSpecialPrice) {
                 if (empty($newSpecialPrice)) {
                     $targetProduct->setSpecialPrice(null);
@@ -72,7 +87,8 @@ class PriceUpdate extends \Magento\Framework\App\Action\Action
                 } else {
                     $targetProduct->setSpecialPrice($newSpecialPrice);
                     $targetProduct->setSpecialFromDate(strtotime('yesterday'));
-                    $targetProduct->setSpecialToDate(strtotime('+3 years'));
+                    //$targetProduct->setSpecialToDate(strtotime('+3 years'));
+                    $targetProduct->setSpecialToDate(null);
                 }
                 $mustSave = true;
             }
