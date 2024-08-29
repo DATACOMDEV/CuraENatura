@@ -1,0 +1,8 @@
+{
+    "protocol": "ftp",
+    "host": "93.95.216.59",
+    "port": 21,
+    "username": "qestagin",
+    "password": "dk83fp59wu3l",
+    "remotePath": "/public_html"
+}

@@ -1,5 +1,7 @@
 .popup-block-modal .popup-bottom,
-.reward-points-payment-content .field.choice {
+.reward-points-payment-content .field.choice,
+#cart-totals .totals-tax,
+#opc-sidebar .opc-block-summary .totals-tax {
     display: none !important;
 }
 
@@ -99,6 +101,10 @@ body._has-modal .page-wrapper {
 
 #product-attribute-specs-table tbody tr th {
     white-space: nowrap;
+}
+
+.logo img {
+    height: auto !important;
 }
 
 @media (max-width: 374px) {
@@ -214,6 +220,12 @@ body._has-modal .page-wrapper {
     /*.col-xs-12.col-lg-2.custom-fix-bootstrap {
         margin-left: 0 !important;
     }*/
+}
+
+@media (min-width: 1024px) {
+    .page-products .products-grid .product-item:nth-child(3n + 1) {
+        margin-left: 0;
+    }
 }
 
 @media (min-width: 1200px) {

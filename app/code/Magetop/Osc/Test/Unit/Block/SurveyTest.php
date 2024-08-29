@@ -1,0 +1,150 @@
+<?php
+/**
+ * Magetop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Magetop.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.magetop.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Magetop
+ * @package     Magetop_Osc
+ * @copyright   Copyright (c) Magetop (https://www.magetop.com/)
+ * @license     https://www.magetop.com/LICENSE.txt
+ */
+
+namespace Magetop\Osc\Test\Unit\Block;
+
+use Magento\Checkout\Model\Session;
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Sales\Model\Order;
+use Magetop\Osc\Block\Survey;
+use Magetop\Osc\Helper\Data as OscHelper;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+
+/**
+ * Class SurveyTest
+ * @package Magetop\Osc\Test\Unit\Block
+ */
+class SurveyTest extends TestCase
+{
+    /**
+     * @var OscHelper|MockObject
+     */
+    private $oscHelperMock;
+
+    /**
+     * @var Session|MockObject
+     */
+    private $checkoutSessionMock;
+
+    /**
+     * @var Survey
+     */
+    private $surveyBlock;
+
+    protected function setUp()
+    {
+        /**
+         * @var Context $contextMock
+         */
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->oscHelperMock = $this->getMockBuilder(OscHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->checkoutSessionMock = $this->getMockBuilder(CheckoutSession::class)
+            ->setMethods([
+                'getLastRealOrder',
+                'setOscData'
+            ])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->initGetLastOrderId();
+
+        $this->surveyBlock = new Survey(
+            $contextMock,
+            $this->oscHelperMock,
+            $this->checkoutSessionMock
+        );
+    }
+
+    public function testEnableSurvey()
+    {
+        $this->oscHelperMock->expects($this->once())->method('isEnabled')->willReturn(true);
+        $this->oscHelperMock->expects($this->once())->method('isDisableSurvey')->willReturn(false);
+        $this->assertTrue($this->surveyBlock->isEnableSurvey());
+    }
+
+    public function testDisableSurvey()
+    {
+        $this->oscHelperMock->expects($this->once())->method('isEnabled')->willReturn(true);
+        $this->oscHelperMock->expects($this->once())->method('isDisableSurvey')->willReturn(true);
+        $this->assertFalse($this->surveyBlock->isEnableSurvey());
+    }
+
+    public function initGetLastOrderId()
+    {
+        $entityId  = 1;
+        $orderMock = $this->getMockBuilder(Order::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->checkoutSessionMock->expects($this->once())
+            ->method('getLastRealOrder')
+            ->willReturn($orderMock);
+
+        $orderMock->expects($this->once())->method('getEntityId')->willReturn($entityId);
+        $this->checkoutSessionMock->expects($this->once())
+            ->method('setOscData')
+            ->with(['survey' => ['orderId' => $entityId]]);
+    }
+
+    public function testGetSurveyQuestion()
+    {
+        $this->oscHelperMock->expects($this->once())->method('getSurveyQuestion');
+
+        $this->surveyBlock->getSurveyQuestion();
+    }
+
+    public function testGetAllSurveyAnswer()
+    {
+        $surveyAnswers = [
+            'key_1' => [
+                'value' => 'test'
+            ]
+        ];
+        $this->oscHelperMock->expects($this->once())->method('getSurveyAnswers')->willReturn($surveyAnswers);
+
+        $this->assertEquals(
+            [['id' => 'key_1', 'value' => 'test']],
+            $this->surveyBlock->getAllSurveyAnswer()
+        );
+    }
+
+    public function testIsAllowCustomerAddOtherOption()
+    {
+        $this->oscHelperMock->expects($this->once())->method('getSurveyQuestion');
+
+        $this->surveyBlock->getSurveyQuestion();
+    }
+
+    public function testGetOscRoute()
+    {
+        $this->oscHelperMock->expects($this->once())->method('getOscRoute');
+
+        $this->surveyBlock->getOscRoute();
+    }
+}

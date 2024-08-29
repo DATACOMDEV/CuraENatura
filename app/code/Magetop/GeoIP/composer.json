@@ -1,0 +1,26 @@
+{
+  "name": "magetop/module-geoip",
+  "description": "Magento 2 GEO IP Extension",
+  "require": {
+    "geoip2/geoip2": "~2.0"
+  },
+  "type": "magento2-module",
+  "version": "1.0.7",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Magetop",
+      "email": "support@magetop.com",
+      "homepage": "https://www.magetop.com",
+      "role": "Technical Support"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Magetop\\GeoIP\\": ""
+    }
+  }
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Magetop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Magetop.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.magetop.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Magetop
+ * @package     Magetop_Osc
+ * @copyright   Copyright (c) Magetop (https://www.magetop.com/)
+ * @license     https://www.magetop.com/LICENSE.txt
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Magetop_Osc::css/style.css"/>
+        <css src="Magetop_Osc::css/jquery-ui.min.css"/>
+        <css src="https://use.fontawesome.com/releases/v5.10.1/css/all.css" src_type="url"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Magetop\Osc\Block\Adminhtml\Field\Tabs" name="mposc.field.tabs" template="Magetop_Osc::field/tabs.phtml">
+                <block class="Magetop\Osc\Block\Adminhtml\Field\Address" name="mposc.field.address"/>
+                <block class="Magetop\Osc\Block\Adminhtml\Field\Shipping" name="mposc.field.shipping"/>
+                <block class="Magetop\Osc\Block\Adminhtml\Field\Payment" name="mposc.field.payment"/>
+                <block class="Magetop\Osc\Block\Adminhtml\Field\Order" name="mposc.field.order"/>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

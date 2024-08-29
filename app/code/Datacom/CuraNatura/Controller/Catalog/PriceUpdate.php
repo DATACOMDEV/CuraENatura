@@ -43,7 +43,7 @@ class PriceUpdate extends \Magento\Framework\App\Action\Action
 	
 				if (empty($targetProduct) || !$targetProduct->getId()) throw new \Magento\Framework\Exception\NoSuchEntityException();
 			} catch (\Magento\Framework\Exception\NoSuchEntityException $th) {
-				continue;
+                continue;
 			}
 
             $mustSave = false;

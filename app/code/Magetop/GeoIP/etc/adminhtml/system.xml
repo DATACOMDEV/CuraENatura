@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magetop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Magetop.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.magetop.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Magetop
+ * @package     Magetop_GeoIP
+ * @copyright   Copyright (c) Magetop (https://www.magetop.com/)
+ * @license     https://www.magetop.com/LICENSE.txt
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+		<tab id="magetop" translate="label" sortOrder="1">
+            <label>Magetop.com</label>
+        </tab>
+        <section id="geoip" translate="label comment" sortOrder="10" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>GeoIP Setting</label>
+            <tab>magetop</tab>
+            <resource>Magetop_GeoIP::configuration</resource>
+			<group id="info" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <frontend_model>Magetop\GeoIP\Block\System\Config\Form\Field\Info</frontend_model>
+            </group>
+            <group id="general" translate="label comment" sortOrder="10" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>GeoIP Configuration</label>
+                <field id="enabled" translate="label comment" sortOrder="1" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable GeoIP</label>
+                    <comment>Please download library before enabling GeoIP</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="token" translate="label comment" type="text" sortOrder="20" showInDefault="1">
+                    <label>License Key</label>
+                    <validate>required-entry</validate>
+                    <comment><![CDATA[Please create <a href="https://www.maxmind.com/en/geolite2/signup" target="_blank">account</a> and get license key <a href="https://www.maxmind.com/en/accounts/current/license-key" target="_blank">here</a>]]></comment>
+                </field>
+                <field id="download_library" translate="label comment" type="button" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <frontend_model>Magetop\GeoIP\Block\Adminhtml\System\Config\Geoip</frontend_model>
+                    <comment>Please save token before downloading the library</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

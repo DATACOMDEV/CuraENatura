@@ -8,4 +8,10 @@
 			</argument>
 		</arguments>
 	</type>
+	<type name="Magento\Sales\Block\Adminhtml\Order\View">
+		<plugin name="addCustomerReorderButton" type="Datacom\CuraNatura\Plugin\Block\Adminhtml\Order\View"/>
+	</type>
+	<type name="Magento\Shipping\Model\Shipping">
+        <plugin disabled="false" name="disableShippingMethod" sortOrder="10" type="Datacom\CuraNatura\Plugin\Model\HandleShippingMethods"/>
+    </type>
 </config>

@@ -40,7 +40,6 @@ RewriteRule ^(.*)UpdateVerifyPrss!(.*)$ - [F,L]
 #Flood:
 deny from 20.105.120.197
 
-
 #SetEnv PHPRC /home/customer/www/curaenatura.com/public_html/php.ini
 ############################################
 ## DATACOM Controllo accessi non validi/riduzione utilizzo risorse
@@ -467,6 +466,13 @@ ErrorDocument 403 /pub/errors/404.php
 </IfModule>
 # Commented by SiteGround automated systems
 #AddHandler application/x-httpd-php71 .php .php5 .php4 .php3
+
+
+
+<Files 403.shtml>
+order allow,deny
+allow from all
+</Files>
 
 # SP BEGIN php handler
 <IfModule mod_fcgid.c>

@@ -1,0 +1,26 @@
+{
+  "name": "magetop/magento-2-one-step-checkout-extension",
+  "description": "Magento 2 One Step Checkout Extension",
+  "require": {
+    "magetop/module-geoip": "^1.0.6"
+  },
+  "type": "magento2-module",
+  "version": "2.10.8",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Magetop",
+      "email": "support@magetop.com",
+      "homepage": "https://www.magetop.com",
+      "role": "Technical Support"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Magetop\\Osc\\": ""
+    }
+  }
+}

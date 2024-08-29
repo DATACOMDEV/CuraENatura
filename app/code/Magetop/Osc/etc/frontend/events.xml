@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magetop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Magetop.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.magetop.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Magetop
+ * @package     Magetop_Osc
+ * @copyright   Copyright (c) Magetop (https://www.magetop.com/)
+ * @license     https://www.magetop.com/LICENSE.txt
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="checkout_allow_guest">
+        <observer name="checkout_allow_guest" instance="Magetop\Osc\Observer\IsAllowedGuestCheckoutObserver"/>
+    </event>
+    <event name="checkout_cart_add_product_complete">
+        <observer name="redirect_to_one_step_checkout" instance="Magetop\Osc\Observer\RedirectToOneStepCheckout"/>
+    </event>
+    <event name="view_block_abstract_to_html_after">
+        <observer name="add_route" instance="Magetop\Osc\Observer\Block"/>
+    </event>
+    <event name="social_manager_get_login_redirect">
+        <observer name="prevent_social_login_redirect" instance="Magetop\Osc\Observer\SocialLogin"/>
+    </event>
+</config>

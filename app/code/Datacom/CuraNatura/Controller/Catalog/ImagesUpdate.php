@@ -40,7 +40,7 @@ class ImagesUpdate extends \Magento\Framework\App\Action\Action
 
         $reqData = $reqData['products'];
 
-        $tempImageFolder = sprintf('%s/datacom/images', BP);
+        $tempImageFolder = sprintf('%s/pub/media/datacom/images', BP);
 
         foreach ($reqData as $sku => $data) {
             try {
@@ -85,7 +85,7 @@ class ImagesUpdate extends \Magento\Framework\App\Action\Action
                 $decodedImage = base64_decode($img['base64_encoded']);
                 $targetFile = sprintf('%s/%s', $tempImageFolder, $img['filename']);
                 file_put_contents($targetFile, $decodedImage);
-                $relativeFile = sprintf('../../datacom/images/%s', $img['filename']);
+                $relativeFile = sprintf('datacom/images/%s', $img['filename']);
                 $targetProduct->addImageToMediaGallery($relativeFile, $imageTypeData, true, false);
                 if (!file_exists($targetFile)) continue;
                 unlink($targetFile);

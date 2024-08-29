@@ -29,6 +29,7 @@
                     if (selectedCountry != 'IT') return;
                     
                     var subtotalWrapper = $('#minicart-content-wrapper .subtotal .price-wrapper .price');
+                    if (subtotalWrapper.length == 0) return;
                     var subtotalHtml = subtotalWrapper.html().split("&")[0];
                     subtotalHtml = subtotalHtml.replace('.', '');
                     subtotalHtml = subtotalHtml.replace(',', '.');

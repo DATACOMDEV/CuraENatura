@@ -101,10 +101,4 @@ class ProductImages extends \Magento\Framework\App\Action\Action
 
         return $productImages;
     }
-
-    private function _getFormattedPrice($price) {
-        if (empty($price)) return 0;
-
-        return $price;
-    }
 }

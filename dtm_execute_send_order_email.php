@@ -1,6 +1,6 @@
 <?php
 
-$phpExecutable = '/usr/local/bin/ea-php71';
+$phpExecutable = '/usr/local/bin/ea-php74';
 $magentoExecutable = dirname(__FILE__).'/bin/magento';
 $lockFile = sprintf('%s/dtm_execute_send_order_email.lock', dirname(__FILE__));
 

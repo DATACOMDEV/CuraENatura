@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magetop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Magetop.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.magetop.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Magetop
+ * @package     Magetop_Osc
+ * @copyright   Copyright (c) Magetop (https://www.magetop.com/)
+ * @license     https://www.magetop.com/LICENSE.txt
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Magetop_Osc::osc" resource="Magetop_Osc::osc" module="Magetop_Osc" title="One Step Checkout" sortOrder="45" parent="Magento_Backend::stores"/>
+        <add id="Magetop_Osc::field_management" title="Manage Fields" module="Magetop_Osc" sortOrder="50" action="onestepcheckout/field/position" resource="Magetop_Osc::field_management" parent="Magetop_Osc::osc"/>
+        <add id="Magetop_Osc::configuration" title="Configuration" module="Magetop_Osc" sortOrder="1000" action="adminhtml/system_config/edit/section/osc" resource="Magetop_Osc::configuration" parent="Magetop_Osc::osc"/>
+    </menu>
+</config>

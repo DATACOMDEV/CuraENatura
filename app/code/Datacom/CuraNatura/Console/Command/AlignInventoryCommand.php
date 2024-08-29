@@ -109,6 +109,12 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         WHERE ei.value=1
         ORDER BY e.entity_id ASC');
 
+        /*$rows = [
+            0 => [
+                'entity_id' => 14632
+            ]
+        ];*/
+
         $stockRules = $this->getStockRulesSettings();
         $unicoData = $this->getInventoryDataUnico($stockRules['UnicoDiscount']);
         

@@ -155,10 +155,15 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
                 $attributesToUpdate['meta_keyword'] = $data['meta_keyword'];
             }
 
+            if (array_key_exists('ean', $data) && $targetProduct->getData('ean') != $data['ean']) {
+                $attributesToUpdate['ean'] = $data['ean'];
+            }
+
             if (array_key_exists('magazzino', $data) && $data['magazzino'] == 'UNICO') {
                 $attributesToUpdate[\Datacom\CuraNatura\Console\Command\AlignInventoryCommand::ATTRIBUTE_CODE_UNICO_INVENTARIO] = 1;
                 if ($isNewProduct) {
-                    $targetProduct->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED);
+                    $attributesToUpdate['status'] = \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
+                    //$targetProduct->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED);
                 }
             }
 
@@ -166,9 +171,9 @@ class ProductUpdate extends \Magento\Framework\App\Action\Action
                 foreach ($attributesToUpdate as $code => $val) {
                     $targetProduct->setData($code, $val);
                 }
-                $this->_productRepository->save($targetProduct);
+                //$this->_productRepository->save($targetProduct);
+                $this->_productAction->updateAttributes([$targetProduct->getId()], $attributesToUpdate, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
                 $targetProduct = $this->_productRepository->get($sku, true, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
-                //$this->_productAction->updateAttributes([$targetProduct->getId()], $attributesToUpdate, \Magento\Store\Model\Store::DEFAULT_STORE_ID);
             }
 
             $mustSave = false;
