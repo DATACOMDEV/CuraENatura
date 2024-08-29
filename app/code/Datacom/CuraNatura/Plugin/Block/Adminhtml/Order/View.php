@@ -9,14 +9,14 @@ class View {
         $url = $view->getUrl('route_id/path').$view->getOrderId();
 
 
-        $view->addButton(
+        /*$view->addButton(
             'order_myaction',
             [
                 'label' => __('My Action'),
                 'class' => 'myclass',
                 'onclick' => "confirmSetLocation('{$message}', '{$url}')"
             ]
-        );
+        );*/
 
 
     }
