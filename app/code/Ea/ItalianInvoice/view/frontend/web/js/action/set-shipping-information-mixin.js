@@ -1,0 +1,41 @@
+define([
+    'jquery',
+    'mage/utils/wrapper',
+    'Magento_Checkout/js/model/quote'
+], function ($, wrapper,quote) {
+    'use strict';
+
+    return function (setShippingInformationAction) {
+        return wrapper.wrap(setShippingInformationAction, function (originalAction, messageContainer) {
+
+            var shippingAddress = quote.shippingAddress();
+
+            if (shippingAddress['extension_attributes'] === undefined) {
+                shippingAddress['extension_attributes'] = {};
+            }
+
+            if (shippingAddress.customAttributes == undefined) {
+                var shippingVal = $('.form-shipping-address input[name="fiscal_code"]').val();
+                if (shippingVal && shippingVal.length > 0) {
+                    shippingAddress.customAttributes = {'fiscal_code': shippingVal};
+                }
+            }
+
+            if (shippingAddress.customAttributes != undefined) {
+                $.each(shippingAddress.customAttributes , function( key, value ) {
+
+                    if($.isPlainObject(value)){
+                        key = value.attribute_code;
+                        value = value.value;
+                    }
+
+                    shippingAddress['customAttributes'][key] = value;
+                    shippingAddress['extension_attributes'][key] = value;
+
+                });
+            }
+
+            return originalAction(messageContainer);
+        });
+    };
+});

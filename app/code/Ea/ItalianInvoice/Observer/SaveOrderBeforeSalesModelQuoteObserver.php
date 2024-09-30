@@ -107,6 +107,7 @@ class SaveOrderBeforeSalesModelQuoteObserver implements ObserverInterface
                 $order->getShippingAddress(),
                 'extra_checkout_shipping_address_fields'
             );
+            $order->getShippingAddress()->setFiscalCode($quote->getBillingAddress()->getFiscalCode());
         }
 
     }
