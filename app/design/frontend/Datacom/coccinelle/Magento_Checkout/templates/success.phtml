@@ -22,20 +22,21 @@
 	//echo "<script type=\"text/javascript\" src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js\"></script>";
 	//echo "<script type=\"text/javascript\" src=\"https://tracking.trovaprezzi.it/javascripts/tracking.min.js\"></script>";
 	echo "<script type=\"text/javascript\">";
-	echo "window._tt = window._tt || [];";
-	echo "window._tt.push({ event: \"setAccount\", id: '". $TPtpi['chiaveMerchant'] ."' });";
-	echo "window._tt.push({ event: \"setOrderId\", order_id: '" . $TPtpi['orderid'] . "' });";
-	echo "window._tt.push({ event: \"setEmail\", email: '" . $TPtpi['email'] . "' });";
+	echo "window._tpt = window._tpt || [];";
+	echo "window._tpt.push({ event: \"setEmail\", email: '" . $TPtpi['email'] . "' });";
 	foreach($products as $prod){
 		$singleProd = $prod->getData();
 		$prodName = str_replace("'", "", $singleProd['name']);
-		echo "window._tt.push({ event: \"addItem\", sku: '" . $singleProd['item_id'] . "', product_name: '" . $prodName . "' });";
+		echo "window._tpt.push({ event: \"addItem\", sku: '" . $singleProd['item_id'] . "', product_name: '" . $prodName . "' });";
 	}
-	echo "window._tt.push({ event: \"setAmount\", amount: '" . $TPtpi['amount'] . "' });";
-	echo "window._tt.push({ event: \"orderSubmit\"});";
+	echo "window._tpt.push({ event: \"setAccount\", id: '". $TPtpi['chiaveMerchant'] ."' });";
+	echo "window._tpt.push({ event: \"setOrderId\", order_id: '" . $TPtpi['orderid'] . "' });";
+	echo "window._tpt.push({ event: \"setAmount\", amount: '" . $TPtpi['amount'] . "' });";
+	echo "window._tpt.push({ event: \"orderSubmit\"});";
 	echo "</script>";
 	/*TP implementation END*/
 ?>
+<!-- Vecchio js tracking Trovaprezzi
 <script>
 	require(
 		[
@@ -45,7 +46,7 @@
 			$.getScript('https://tracking.trovaprezzi.it/javascripts/tracking.min.js');
 		}
 	);
-</script>
+</script> -->
 <!-- Fine tracciamento Trovaprezzi -->
 <div class="checkout-success">
     <?php if ($block->getOrderId()):?>
