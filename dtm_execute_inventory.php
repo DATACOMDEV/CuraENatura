@@ -14,12 +14,21 @@ try {
     for ($i = 1; $i <= 3; $i++) {
         echo sprintf("Iterazione %d\r\n", $i);
         
-        $output = null;
-        $retval = null;
-    
-        echo exec(implode(' ', [$phpExecutable, $magentoExecutable, 'datacom:aligninventory']), $output, $retval);
-        echo "Operation status: ".$retval."\r\n";
-        echo print_r($output, true)."\r\n";
+        $maxExecCount = 500;
+        while ($maxExecCount > 0) {
+            $output = null;
+            $retval = null;
+
+            echo exec(implode(' ', [$phpExecutable, $magentoExecutable, 'datacom:aligninventory']), $output, $retval);
+            echo "Operation status: ".$retval."\r\n";
+            echo print_r($output, true)."\r\n";
+
+            if (in_array('Operazione completata', $output)) break;
+
+            $maxExecCount--;
+        }
+
+        if ($maxExecCount <= 0) throw new Exception('Errore nel riallineamento inventario UNICO');
 
         $output = null;
         $retval = null;

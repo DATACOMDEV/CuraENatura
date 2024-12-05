@@ -68,6 +68,7 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         $output->writeln(sprintf('Avvio procedura allineamento inventario - %s', $now->format('Y-m-d H:i:s')));
 
         $lockFile = dirname(__FILE__).'/AlignInventoryCommand.lock';
+        $maxRows = 100;
 
         if (file_exists($lockFile)) {
             $output->writeln('Un altro allineamento è già in esecuzione. Attendere.');
@@ -79,7 +80,7 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         $err = null;
 
         try {
-            $this->_execute($input, $output);
+            $hasFinished = $this->_execute($input, $output, $maxRows);
         } catch (\Exception $ex) {
             $err = $ex;
         }
@@ -90,11 +91,15 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
 
         if (!is_null($err)) throw $err;
 
-        $output->writeln('Operazione completata');
+        if ($hasFinished) {
+            $output->writeln('Operazione completata');
+            $output->writeln('----------------------');
+            return;
+        } 
         $output->writeln('----------------------');
     }
 
-    protected function _execute(InputInterface $input, OutputInterface $output) {
+    protected function _execute(InputInterface $input, OutputInterface $output, $maxRows) {
         $handleStock = true;
         $handlePrice = true;
 
@@ -105,6 +110,14 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         $output->writeln(sprintf('Gestione prezzi: %s', $handlePrice ? 'si' : 'no'));
         
         $frontendStoreId = 1;
+        
+        $lastEntityId = 0;
+        $lastIdFile = dirname(__FILE__).'/AlignInventoryCommand.info';
+        if (file_exists($lastIdFile)) {
+            $lastEntityId = file_get_contents($lastIdFile);
+            $lastEntityId = trim($lastEntityId);
+            $lastEntityId = intval($lastEntityId);
+        }
 
         $output->write(sprintf('Gestione file salvati precedentemente...'));
         try {
@@ -118,11 +131,12 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         
         $conn = $this->_conn->getConnection();
 
-        $rows = $conn->fetchAll('SELECT e.entity_id 
+        $rows = $conn->fetchAll(sprintf('SELECT e.entity_id 
         FROM mg_catalog_product_entity e
         INNER JOIN mg_catalog_product_entity_int ei ON ei.attribute_id=174 AND ei.store_id=0 AND ei.entity_id=e.entity_id
-        WHERE ei.value=1
-        ORDER BY e.entity_id ASC');
+        WHERE ei.value=1 AND e.entity_id>%d
+        ORDER BY e.entity_id ASC
+        LIMIT %d', $lastEntityId, $maxRows));
 
         /*$rows = [
             0 => [
@@ -133,38 +147,60 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         $stockRules = $this->getStockRulesSettings();
         $unicoData = $this->getInventoryDataUnico($stockRules['UnicoDiscount']);
 
+        $empty = true;
         foreach ($rows as $r) {
+            $empty = false;
             try {
                 $product = $this->_productRepositoryInterface->getById($r['entity_id'], false, $frontendStoreId);
                 $wasDisabled = $product->getStatus() == \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
 
                 $hasAlreadySavedProduct = false;
                 $details = $this->manageInventoryData($product, $unicoData, $handleStock, $handlePrice, $hasAlreadySavedProduct);
-                if (empty($details)) continue;
+                if (empty($details)) {
+                    $lastEntityId = $r['entity_id'];
+                    continue;
+                }
                 $output->writeln(sprintf('Articolo %s gestito tramite inventario: %s', $product->getSku(), implode(', ', $details)));
 
-                if ($hasAlreadySavedProduct) continue;
+                if ($hasAlreadySavedProduct) {
+                    $lastEntityId = $r['entity_id'];
+                    continue;
+                }
 
                 if (!array_key_exists($product->getSku(), $unicoData)) {
-                    if ($wasDisabled) continue;
+                    if ($wasDisabled) {
+                        $lastEntityId = $r['entity_id'];
+                        continue;
+                    }
                     $output->writeln(sprintf('Articolo %s gestito tramite inventario UNICO ma non più presente. Disattivato', $product->getSku()));
                     //$product->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED);
                     $toDisableIds[] = $product->getId();
                     //$this->_productRepositoryInterface->save($product);
+                    $lastEntityId = $r['entity_id'];
                     continue;
                 } else if ($wasDisabled) {
                     $output->writeln(sprintf('Articolo %s gestito tramite inventario UNICO ma disattivato. Riattivato', $product->getSku()));
                     //$product->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED);
                     $toEnableIds[] = $product->getId();
                     //$this->_productRepositoryInterface->save($product);
+                    $lastEntityId = $r['entity_id'];
                     continue;
                 }
             } catch (\Exception $ex) {
+                $lastEntityId = $r['entity_id'];
                 $output->writeln($ex->getMessage());
                 $output->writeln($ex->getTraceAsString());
                 continue;
             }
         }
+
+        if (file_exists($lastIdFile)) {
+            unlink($lastIdFile);
+        }
+
+        if ($empty) return true;
+        
+        file_put_contents($lastIdFile, $lastEntityId.'');
 
         if (!empty($toEnableIds)) {
             try {
@@ -190,6 +226,8 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
                 throw $ex;
             }
         }
+
+        return false;
     }
 
     private function checkTodo($filename, $frontendStoreId) {
