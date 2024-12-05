@@ -21,6 +21,13 @@ try {
         echo "Operation status: ".$retval."\r\n";
         echo print_r($output, true)."\r\n";
 
+        $output = null;
+        $retval = null;
+        
+        echo exec(implode(' ', [$phpExecutable, $magentoExecutable, 'indexer:reindex']), $output, $retval);
+        echo "Reindex status: ".$retval."\r\n";
+        echo print_r($output, true)."\r\n";
+
         echo "-------\r\n";
     }
 } catch (Exception $ex) {

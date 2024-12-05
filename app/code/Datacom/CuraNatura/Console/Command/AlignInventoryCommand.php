@@ -98,8 +98,23 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
         $handleStock = true;
         $handlePrice = true;
 
+        $toEnableIds = [];
+        $toDisableIds = [];
+
         $output->writeln(sprintf('Gestione stock: %s', $handleStock ? 'si' : 'no'));
         $output->writeln(sprintf('Gestione prezzi: %s', $handlePrice ? 'si' : 'no'));
+        
+        $frontendStoreId = 1;
+
+        $output->write(sprintf('Gestione file salvati precedentemente...'));
+        try {
+            $this->checkTodo('toenable.json', $frontendStoreId);
+            $this->checkTodo('todisable.json', $frontendStoreId);
+            $output->writeln(sprintf('...fatto'));
+        } catch (\Exception $ex) {
+            $output->writeln(sprintf('...errore'));
+            throw $ex;
+        }
         
         $conn = $this->_conn->getConnection();
 
@@ -117,10 +132,10 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
 
         $stockRules = $this->getStockRulesSettings();
         $unicoData = $this->getInventoryDataUnico($stockRules['UnicoDiscount']);
-        
+
         foreach ($rows as $r) {
             try {
-                $product = $this->_productRepositoryInterface->getById($r['entity_id']);
+                $product = $this->_productRepositoryInterface->getById($r['entity_id'], false, $frontendStoreId);
                 $wasDisabled = $product->getStatus() == \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
 
                 $hasAlreadySavedProduct = false;
@@ -133,13 +148,15 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
                 if (!array_key_exists($product->getSku(), $unicoData)) {
                     if ($wasDisabled) continue;
                     $output->writeln(sprintf('Articolo %s gestito tramite inventario UNICO ma non più presente. Disattivato', $product->getSku()));
-                    $product->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED);
-                    $this->_productRepositoryInterface->save($product);
+                    //$product->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED);
+                    $toDisableIds[] = $product->getId();
+                    //$this->_productRepositoryInterface->save($product);
                     continue;
                 } else if ($wasDisabled) {
                     $output->writeln(sprintf('Articolo %s gestito tramite inventario UNICO ma disattivato. Riattivato', $product->getSku()));
-                    $product->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED);
-                    $this->_productRepositoryInterface->save($product);
+                    //$product->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED);
+                    $toEnableIds[] = $product->getId();
+                    //$this->_productRepositoryInterface->save($product);
                     continue;
                 }
             } catch (\Exception $ex) {
@@ -148,6 +165,65 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
                 continue;
             }
         }
+
+        if (!empty($toEnableIds)) {
+            try {
+                $output->writeln(sprintf('Riattivazione %d articoli...', count($toEnableIds)));
+                $this->_productAction->updateAttributes($toEnableIds, ['status' => \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED], $frontendStoreId);
+                $output->writeln(sprintf('...fatto'));
+            } catch (\Exception $ex) {
+                $this->logUpdatedIds($toEnableIds, 'toenable.json');
+                if (!empty($toDisableIds)) {
+                    $this->logUpdatedIds($toDisableIds, 'todisable.json');
+                }
+                throw $ex;
+            }
+        }
+
+        if (!empty($toDisableIds)) {
+            try {
+                $output->writeln(sprintf('Disattivazione %d articoli', count($toDisableIds)));
+                $this->_productAction->updateAttributes($toDisableIds, ['status' => \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED], $frontendStoreId);
+                $output->writeln(sprintf('...fatto'));
+            } catch (\Exception $ex) {
+                $this->logUpdatedIds($toDisableIds, 'todisable.json');
+                throw $ex;
+            }
+        }
+    }
+
+    private function checkTodo($filename, $frontendStoreId) {
+        $i = 0;
+        do {
+            $i++;
+            $file = sprintf('%s/%s.%d', dirname(__FILE__), $filename, $i);
+
+            if (!file_exists($file)) break;
+
+            $ids = file_get_contents($file);
+            if (empty($ids)) continue;
+            $ids = json_decode($ids, true);
+            if (empty($ids)) continue;
+
+            if ($filename == 'toenable.json') {
+                $this->_productAction->updateAttributes($ids, ['status' => \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED], $frontendStoreId);
+                unlink($file);
+                continue;
+            }
+
+            $this->_productAction->updateAttributes($ids, ['status' => \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED], $frontendStoreId);
+            unlink($file);
+        } while (true);
+    }
+
+    private function logUpdatedIds($ids, $filename) {
+        $i = 0;
+        do {
+            $i++;
+            $file = sprintf('%s/%s.%d', dirname(__FILE__), $filename, $i);
+        } while (file_exists($file));
+        
+        file_put_contents($file, json_encode($ids));
     }
 
     protected function manageInventoryData($product, $unicoData, $handleStock, $handlePrice, &$hasAlreadySavedProduct) {
