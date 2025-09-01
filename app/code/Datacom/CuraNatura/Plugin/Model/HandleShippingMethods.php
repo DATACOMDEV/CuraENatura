@@ -22,20 +22,20 @@ class HandleShippingMethods
     ) {
         /*if ($carrierCode == 'flatrate' || $carrierCode == 'tablerate') { // add relevant shipping code
             $quote = $this->_checkoutSession->getQuote();
-            if ($quote && $quote->getGrandTotal() >= 50) return false;
+            if ($quote && $quote->getGrandTotal() >= 54.99) return false;
         }*/
         $retval =  $proceed($carrierCode, $request);
         /*if ($carrierCode == 'flatrate' || $carrierCode == 'tablerate') { // add relevant shipping code
             $quote = $this->_checkoutSession->getQuote();
-            if ($quote && $quote->getGrandTotal() >= 50) return false;
+            if ($quote && $quote->getGrandTotal() >= 54.99) return false;
         }*/
        
         $quote = $this->_checkoutSession->getQuote();
         
         if (!$quote) return $retval;
         if ($carrierCode != 'flatrate' && $carrierCode != 'tablerate') return $retval;
-        //if ($quote && $quote->getGrandTotal() < 50) return $retval;
-        if ($this->getQuoteEuroAmount($quote) < 50) return $retval;
+        //if ($quote && $quote->getGrandTotal() < 54.99) return $retval;
+        if ($this->getQuoteEuroAmount($quote) < 54.99) return $retval;
         if ($quote->getShippingAddress()->getCountryId() != 'IT') return $retval;
         
         foreach ($retval->getResult()->getAllRates() as $rate) {            

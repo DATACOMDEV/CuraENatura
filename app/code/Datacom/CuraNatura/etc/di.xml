@@ -14,4 +14,8 @@
 	<type name="Magento\Shipping\Model\Shipping">
         <plugin disabled="false" name="disableShippingMethod" sortOrder="10" type="Datacom\CuraNatura\Plugin\Model\HandleShippingMethods"/>
     </type>
+	<type name="Magento\Payment\Model\PaymentMethod">
+        <plugin disabled="false" name="disablePaymentMethod" 
+			type="Datacom\CuraNatura\Plugin\Payment\Model\PaymentPlugin"/>
+    </type>
 </config>

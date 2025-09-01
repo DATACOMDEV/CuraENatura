@@ -153,6 +153,18 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
             try {
                 $product = $this->_productRepositoryInterface->getById($r['entity_id'], false, $frontendStoreId);
                 $wasDisabled = $product->getStatus() == \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
+                $isProductStillPresent = array_key_exists($product->getSku(), $unicoData);
+
+                if ($isProductStillPresent) {
+                    $forceDisable = $unicoData[$product->getSku()]['price'] == 0;
+
+                    if (!$wasDisabled && $forceDisable) {
+                        $output->writeln(sprintf('Articolo %s gestito tramite inventario UNICO ma con prezzo a zero. Disattivato', $product->getSku()));
+                        $toDisableIds[] = $product->getId();
+                        $lastEntityId = $r['entity_id'];
+                        continue;
+                    }
+                }
 
                 $hasAlreadySavedProduct = false;
                 $details = $this->manageInventoryData($product, $unicoData, $handleStock, $handlePrice, $hasAlreadySavedProduct);
@@ -167,7 +179,7 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
                     continue;
                 }
 
-                if (!array_key_exists($product->getSku(), $unicoData)) {
+                if (!$isProductStillPresent) {
                     if ($wasDisabled) {
                         $lastEntityId = $r['entity_id'];
                         continue;
@@ -311,12 +323,19 @@ class AlignInventoryCommand extends \Symfony\Component\Console\Command\Command
     }
 
     protected function updateProductPrice($product, $unicoPrice, $unicoSpecialPrice) { 
-        if ($product->getPrice() == $unicoPrice) return false;
-
-        $product->setPrice($unicoPrice);
-        $product->setSpecialPrice($unicoSpecialPrice);
-        $this->_productRepositoryInterface->save($product);
-        return true;
+        $retval = false;
+        if ($product->getPrice() != $unicoPrice) {
+            $product->setPrice($unicoPrice);
+            $retval = true;
+        }
+        if ($product->getSpecialPrice() != $unicoSpecialPrice) {
+            $product->setSpecialPrice($unicoSpecialPrice);
+            $retval = true;
+        }
+        if ($retval) {
+            $this->_productRepositoryInterface->save($product);
+        }        
+        return $retval;
     }
 
     /*protected function updateProductPrice($product, $useUnicoPrice) {

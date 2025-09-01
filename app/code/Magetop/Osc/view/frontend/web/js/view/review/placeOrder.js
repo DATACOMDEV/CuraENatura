@@ -29,7 +29,8 @@ define(
         'Magento_Checkout/js/model/payment/additional-validators',
         'Magento_Customer/js/customer-data',
         'Magetop_Osc/js/action/set-checkout-information',
-        'Magetop_Osc/js/model/braintree-paypal'
+        'Magetop_Osc/js/model/braintree-paypal',
+        'Magetop_Osc/js/model/osc-data'
     ],
     function ($,
               _,
@@ -40,7 +41,8 @@ define(
               additionalValidators,
               customerData,
               setCheckoutInformationAction,
-              braintreePaypalModel) {
+              braintreePaypalModel,
+              oscData) {
         "use strict";
 
         return Component.extend({
@@ -93,8 +95,41 @@ define(
                 return this.getBraintreePaypalComponent()
                     && this.isPaymentBraintreePaypal();
             },
+            checkFermoPointWarning: function () {
+                if ($('.osc-custom-error-wrapper').length > 0) {
+                    $('.osc-custom-error-wrapper').remove();
+                }
+                if (!($('input[id="s_method_sendcloud_sendcloud"]').is(':checked'))) return true;
+                if ($('#selectedServicePoint > .col').length == 0) return false;
+                if (!($('input[id="msp_cashondelivery"]').is(':checked'))) return true;
+                $('.osc-place-order-wrapper').before('<div class="osc-custom-error-wrapper col-mp mp-lg-12 mp-md-12 mp-sm-12 mp-xs-12">\
+                    <div class="message error">\
+                    <span>Il fermo point non permette di acquistare tramite contrassegno</span>\
+                </div>\
+                </div>');
+                return false;
+            },
+            storeFermoPointData: function () {
+                let commentField = $('#comments');
+                let selectedInfo = $('#selectedServicePoint > .col');
+                let index = commentField.val().indexOf('[FERMO POINT]');
+                if (index != -1) {
+                    commentField.val(commentField.val().substring(0, index));
+                }
+                if (!($('input[id="s_method_sendcloud_sendcloud"]').is(':checked'))) return;
+                if (selectedInfo.length == 0) return;
+                let comments = document.createElement('div');
+                comments.innerHTML = selectedInfo.html().trim();
+                comments.innerHTML = comments.innerHTML.replace(/\s+/g, " ");
+                comments = commentField.val() + "\n[FERMO POINT]\n" + (comments.textContent || comments.innerText || '');
+                commentField.val(comments);
+                commentField.trigger('focusout');
+                oscData.setData('comment', comments);
+            },
             placeOrder: function () {
                 var self = this;
+                if (!this.checkFermoPointWarning()) return this;
+                this.storeFermoPointData();
                 if (additionalValidators.validate()) {
                     this.preparePlaceOrder().done(function () {
                         self._placeOrder();
